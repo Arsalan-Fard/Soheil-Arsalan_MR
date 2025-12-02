@@ -11,88 +11,99 @@
     <div class="container">
         
         <header>
-            <h1 class="name">Human-Computer Interaction for Mixed Reality</h1>
+            <button id="theme-toggle" class="theme-toggle" aria-label="Toggle dark mode">
+                <svg class="moon-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+                <svg class="sun-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+            </button>
+            <h1 class="name">Human-Computer Interaction for Mixed Reality (CSC_5IG01_TP)</h1>
             <p class="bio">
-...
+                Soheil Lotfi, Arsalan Masoudifard
             </p>
-            <a href="#" class="more-info">More Info</a>
+            <!-- <a href="#" class="more-info">More Info</a> -->
         </header>
 
         <nav class="filter-nav">
             <button class="filter-btn active" onclick="filterProjects('all', this)">All</button>
-            <button class="filter-btn" onclick="filterProjects('objects', this)">Objects</button>
-            <button class="filter-btn" onclick="filterProjects('interfaces', this)">Interfaces</button>
+            <button class="filter-btn" onclick="filterProjects('Labs', this)">Labs</button>
+            <button class="filter-btn" onclick="filterProjects('Lectures', this)">Lectures</button>
+            <button class="filter-btn" onclick="filterProjects('Project', this)">Project</button>
         </nav>
 
         <main class="project-grid" id="gallery">
             
-            <article class="project-card" data-category="interfaces">
+            <article class="project-card" data-category="Labs" data-id="lab-1">
                 <div class="image-container">
-                    <img src="https://images.unsplash.com/photo-1598810839079-5c4c83df5928?q=80&w=1000&auto=format&fit=crop" alt="Hand holding device">
-                    <div class="badge">RUNNER UP<br>CORE77 AWARDS</div>
+                    <img src="images/blog_image.jpg" alt="blog setup">
+                    <!-- <div class="badge">RUNNER UP<br>CORE77 AWARDS</div> -->
                 </div>
                 <div class="project-info">
                     <h3 class="project-title">
-                        <strong>Connecting to Nature through Data Sonification</strong> – A Conceptual Sound Design Experience
+                        <strong>Lab 1:</strong> Blog Setup
                     </h3>
                     <div class="tags">
                         <span class="tag">2025</span>
-                        <span class="tag">INTERACTION DESIGN</span>
-                        <span class="tag">SOUND DESIGN</span>
-                        <span class="tag">TEAM</span>
+                        <span class="tag">Lab homework</span>
+                        <span class="tag">Tutorial</span>
                     </div>
                 </div>
             </article>
 
-            <article class="project-card" data-category="objects">
+            <article class="project-card" data-category="Labs" data-id="lab-2">
                 <div class="image-container">
-                    <img src="https://images.unsplash.com/photo-1515488042361-ee00e0ddd4e4?q=80&w=1000&auto=format&fit=crop" alt="Colorful toys">
+                    <img src="images/unity_setup_image.jpg" alt="unity setup">
                 </div>
                 <div class="project-info">
                     <h3 class="project-title">
-                        <strong>Let's Play with Food!</strong> – Engaging Therapy for Children with Sensory-Based Feeding Difficulties
+                        <strong>Lab 2:</strong> Unity Setup
                     </h3>
                     <div class="tags">
-                        <span class="tag">2024</span>
-                        <span class="tag">INDUSTRIAL DESIGN</span>
-                        <span class="tag">SOLO</span>
+                        <span class="tag">2025</span>
+                        <span class="tag">Lab homework</span>
+                        <span class="tag">Tutorial</span>
                     </div>
                 </div>
             </article>
 
-            <article class="project-card" data-category="interfaces">
+            <article class="project-card" data-category="Lectures" data-id="lecture-1">
                 <div class="image-container">
-                    <img src="https://images.unsplash.com/photo-1551650975-87deedd944c3?q=80&w=1000&auto=format&fit=crop" alt="Mobile App Interface">
+                    <img src="images/VR_fail_image.jpg" alt="VR Fails">
                 </div>
                 <div class="project-info">
                     <h3 class="project-title">
-                        <strong>Storybook Mobile</strong> – Digital reading experience for early learners
+                        <strong>Lecture 1:</strong> VR Fails
                     </h3>
                     <div class="tags">
-                        <span class="tag">2024</span>
-                        <span class="tag">UX/UI</span>
-                        <span class="tag">PROTOTYPE</span>
+                        <span class="tag">2025</span>
+                        <span class="tag">Lecture Homework</span>
+                        <span class="tag">Post</span>
                     </div>
                 </div>
             </article>
 
-            <article class="project-card" data-category="interfaces">
+            <article class="project-card" data-category="Project" data-id="project-1">
                 <div class="image-container">
                     <img src="https://images.unsplash.com/photo-1616348436168-de43ad0db179?q=80&w=1000&auto=format&fit=crop" alt="Widget Interface">
                 </div>
                 <div class="project-info">
                     <h3 class="project-title">
-                        <strong>Widget OS</strong> – A minimalist approach to Android customization
+                        <strong>Final Project:</strong> Locomotion
                     </h3>
                     <div class="tags">
-                        <span class="tag">2023</span>
-                        <span class="tag">INTERFACE</span>
-                        <span class="tag">CONCEPT</span>
+                        <span class="tag">2026</span>
+                        <span class="tag">Final Project</span>
+                        <span class="tag">Demo</span>
                     </div>
                 </div>
             </article>
 
         </main>
+
+        <div id="project-detail" class="hidden">
+            <button id="back-btn" onclick="showGallery()">Back to Projects</button>
+            <h2 id="detail-title"></h2>
+            <img id="detail-image" src="" alt="">
+            <div id="detail-content"></div>
+        </div>
     </div>
 
     <script src="script.js"></script>
