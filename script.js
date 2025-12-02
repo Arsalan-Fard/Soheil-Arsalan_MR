@@ -13,45 +13,32 @@ const projectData = {
                         </figure>
                     </li>
                     <li>
-                        <p>We used https://www.bestfolios.com/portfolio/leahlee to get a template and modified to meets our need.</p>
+                        <p>We can use https://www.bestfolios.com/portfolio/leahlee to get a template and then we can modify it.</p>
                         <figure>
                             <img src="blog_setup/2.png" alt="GitHub Pages settings in a repository with 'octocat.github.io' outlined." style="max-width: 100%; height: auto; display: block; margin: 15px 0; border-radius: 6px;">
                             <figcaption>Repository naming</figcaption>
                         </figure>
                     </li>
                     <li>
-                        <p>Choose a repository visibility. For more information, see <a href="#">About repositories</a>.</p>
-                    </li>
-                    <li>
-                        <p>Toggle <strong>Add README</strong> to <strong>On</strong>.</p>
-                    </li>
-                    <li>
-                        <p>Click <strong>Create repository</strong>.</p>
-                    </li>
-                    <li>
-                        <p>Under your repository name, click <strong>Settings</strong>. If you cannot see the "Settings" tab, select the <strong>...</strong> dropdown menu, then click <strong>Settings</strong>.</p>
+                        <p>Under the repository name, click <strong>Settings</strong>. If you cannot see the "Settings" tab, select the <strong>...</strong> dropdown menu, then click <strong>Settings</strong>.</p>
                         <figure>
                             <img src="blog_setup/3.png" alt="Repository header with 'Settings' tab highlighted." style="max-width: 100%; height: auto; display: block; margin: 15px 0; border-radius: 6px;">
                             <figcaption>Repository Settings tab</figcaption>
                         </figure>
                     </li>
+
                     <li>
-                        <p>In the "Code and automation" section of the sidebar, click <strong>Pages</strong>.</p>
+                        <p>In the "Code and automation" section of the sidebar, click  Pages.</p>
                     </li>
                     <li>
-                        <p>Under "Build and deployment", under "Source", select <strong>Deploy from a branch</strong>.</p>
+                        <p>Under "Build and deployment", under "Source", select Deploy from a branch.</p>
                     </li>
+
                     <li>
                         <p>Under "Build and deployment", under "Branch", use the branch dropdown menu and select a publishing source.</p>
-                        <figure>
-                            <img src="blog_setup/4.png" alt="GitHub Pages branch selection menu with 'None' outlined." style="max-width: 100%; height: auto; display: block; margin: 15px 0; border-radius: 6px;">
-                            <figcaption>GitHub Pages branch selection</figcaption>
-                        </figure>                    </li>
-                    <li>
-                        <p>Optionally, open the <code>README.md</code> file of your repository. The <code>README.md</code> file is where you will write the content for your site. You can edit the file or keep the default content for now.</p>
                     </li>
                     <li>
-                        <p>Visit <code>username.github.io</code> to view your new website. Note that it can take up to 10 minutes for changes to your site to publish after you push the changes to GitHub.</p>
+                        <p>Visit username.github.io to view your new website. Note that it can take up to 10 minutes for changes to your site to publish after you push the changes to GitHub.</p>
                     </li>
                 </ol>
             </div>
