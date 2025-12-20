@@ -30,6 +30,16 @@ body.dark-mode {
     padding: 0;
 }
 
+html {
+    scroll-snap-type: y mandatory;
+    scroll-behavior: smooth;
+    scrollbar-width: none; /* Firefox */
+}
+
+html::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, Opera */
+}
+
 body {
     font-family: 'Inter', Helvetica, Arial, sans-serif;
     background-color: var(--bg-color);
@@ -57,14 +67,15 @@ a:hover {
 }
 
 header {
-    min-height: 100vh;
+    height: 100vh;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 40px;
-    padding-bottom: 40px;
+    margin-bottom: 0;
+    padding-bottom: 0;
     border-bottom: 1px solid var(--border-color);
     position: relative;
+    scroll-snap-align: start;
 }
 
 .header-left {
@@ -198,10 +209,17 @@ p.bio {
 }
 
 .filter-nav {
-    margin-bottom: 30px;
+    margin-bottom: 0;
     font-size: 32px;
     font-weight: 700;
     letter-spacing: -0.5px;
+    scroll-snap-align: start;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background-color: var(--bg-color);
+    padding: 20px 0;
+    border-bottom: 1px solid var(--border-color);
 }
 
 .filter-btn {
@@ -229,6 +247,7 @@ p.bio {
     display: grid;
     grid-template-columns: 1fr;
     gap: 40px;
+    padding-top: 40px;
 }
 
 @media (min-width: 768px) {
@@ -238,9 +257,15 @@ p.bio {
 }
 
 .project-card {
-    display: block;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    height: calc(100vh - 120px); /* Fill view minus nav height */
     animation: fadeIn 0.5s ease;
     cursor: pointer;
+    scroll-snap-align: start;
+    scroll-snap-stop: always;
+    scroll-margin-top: 100px; /* Offset for sticky nav */
 }
 
 .hidden {
