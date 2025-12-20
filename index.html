@@ -1,133 +1,546 @@
 <!DOCTYPE html>
-<html lang="en" data-bs-theme="light">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Human-Computer Interaction for Mixed Reality</title>
+    <title>Glitch Matrix Prototype</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.2.0/github-markdown.min.css">
-    <link rel="stylesheet" href="styles/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500&family=Orbitron:wght@400;600;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            color-scheme: dark;
+            --bg-0: #05080b;
+            --bg-1: #0a1118;
+            --bg-2: #0f1a25;
+            --glow: #00f0ff;
+            --glow-soft: rgba(0, 240, 255, 0.2);
+            --accent: #ff4f7b;
+            --accent-soft: rgba(255, 79, 123, 0.2);
+            --text: #e8f6ff;
+            --muted: #8fb0c4;
+            --frame-bg: rgba(6, 12, 18, 0.82);
+            --frame-border: rgba(0, 240, 255, 0.35);
+        }
+
+        @keyframes gradientFlow {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: "IBM Plex Mono", "Courier New", monospace;
+            color: var(--text);
+            background:
+                radial-gradient(circle at 15% 15%, rgba(0, 240, 255, 0.12), transparent 45%),
+                radial-gradient(circle at 85% 10%, rgba(255, 79, 123, 0.14), transparent 40%),
+                radial-gradient(circle at 60% 80%, rgba(0, 140, 255, 0.12), transparent 45%),
+                linear-gradient(180deg, var(--bg-0) 0%, var(--bg-1) 40%, var(--bg-2) 100%);
+            overflow-x: hidden;
+        }
+
+        #hero {
+            position: fixed;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 0 10vw;
+            z-index: 3;
+            pointer-events: none;
+        }
+
+        .hero-inner {
+            max-width: 1100px;
+        }
+
+        .hero-title {
+            font-family: "Space Grotesk", "Trebuchet MS", sans-serif;
+            font-size: clamp(2.2rem, 4.4vw, 4.6rem);
+            line-height: 1.1;
+            margin: 0 0 16px;
+            background: linear-gradient(90deg, #33ffc5, #33ccff, #3366ff);
+            background-size: 200% 200%;
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            -webkit-text-fill-color: transparent;
+            animation: gradientFlow 6s ease infinite;
+        }
+
+        .hero-subtitle {
+            margin: 0;
+            font-size: clamp(1rem, 1.6vw, 1.4rem);
+            letter-spacing: 0.02em;
+            color: var(--muted);
+        }
+
+        #scroll-hint {
+            position: fixed;
+            left: 50%;
+            bottom: 28px;
+            transform: translateX(-50%);
+            z-index: 3;
+            text-transform: uppercase;
+            letter-spacing: 0.24em;
+            font-size: 0.72rem;
+            color: var(--muted);
+            opacity: 0.85;
+            pointer-events: none;
+        }
+
+        #scroll-hint span {
+            color: var(--glow);
+        }
+
+        #intro-dim {
+            position: fixed;
+            inset: 0;
+            background: #010206;
+            opacity: 0;
+            pointer-events: none;
+            z-index: 2;
+        }
+
+        #viewport {
+            position: fixed;
+            inset: 0;
+            perspective: 1000px;
+            overflow: hidden;
+        }
+
+        #scene {
+            position: absolute;
+            inset: -25vh -10vw;
+            transform-style: preserve-3d;
+        }
+
+        #grid-plane {
+            position: absolute;
+            width: 200vw;
+            height: 200vh;
+            top: 50%;
+            left: -50vw;
+            background-image:
+                linear-gradient(transparent 95%, rgba(0, 240, 255, 0.08) 98%),
+                linear-gradient(90deg, transparent 95%, rgba(0, 240, 255, 0.08) 98%);
+            background-size: 80px 80px;
+            transform: translate3d(0, 200px, -5000px) rotateX(86deg);
+            opacity: 0.6;
+            pointer-events: none;
+        }
+
+        #voxel-field,
+        #posts {
+            position: absolute;
+            inset: 0;
+            transform-style: preserve-3d;
+        }
+
+        .voxel {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: rgba(0, 240, 255, 0.15);
+            box-shadow: 0 0 12px rgba(0, 240, 255, 0.45);
+            transform-style: preserve-3d;
+            animation: voxel-flicker 3s steps(2, end) infinite;
+            opacity: 0.7;
+        }
+
+        .post-frame {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: min(88vw, 640px);
+            transform: translate3d(calc(-50% + var(--x)), calc(-50% + var(--y)), var(--z));
+            transform-style: preserve-3d;
+            transition: opacity 0.3s ease, filter 0.3s ease;
+        }
+
+        .post-frame::before,
+        .post-frame::after {
+            content: "";
+            position: absolute;
+            inset: -8px;
+            border: 1px solid transparent;
+            pointer-events: none;
+            animation: frame-glitch 6s steps(2, end) infinite;
+        }
+
+        .post-frame::before {
+            border-color: rgba(0, 240, 255, 0.35);
+            transform: translate3d(-2px, 0, 10px);
+            opacity: 0.7;
+        }
+
+        .post-frame::after {
+            border-color: rgba(255, 79, 123, 0.3);
+            transform: translate3d(2px, 0, 6px);
+            opacity: 0.5;
+        }
+
+        .frame-inner {
+            position: relative;
+            padding: 22px 26px;
+            background: var(--frame-bg);
+            border: 1px solid var(--frame-border);
+            backdrop-filter: blur(8px);
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.4);
+        }
+
+        .frame-index {
+            font-family: "Orbitron", "Trebuchet MS", sans-serif;
+            font-size: 0.9rem;
+            letter-spacing: 0.2em;
+            color: var(--glow);
+            margin-bottom: 6px;
+        }
+
+        .frame-title {
+            font-family: "Orbitron", "Trebuchet MS", sans-serif;
+            font-size: 1.85rem;
+            margin: 0 0 10px;
+            text-shadow: 0 0 12px rgba(0, 240, 255, 0.35);
+        }
+
+        .frame-meta {
+            font-size: 0.85rem;
+            color: var(--muted);
+            margin-bottom: 12px;
+        }
+
+        .frame-body {
+            font-size: 1.02rem;
+            line-height: 1.6;
+            margin: 0 0 14px;
+        }
+
+        .frame-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .frame-tag {
+            padding: 4px 10px;
+            border: 1px solid rgba(0, 240, 255, 0.35);
+            border-radius: 999px;
+            font-size: 0.75rem;
+            color: var(--glow);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+
+        #scanlines,
+        #noise,
+        #chromatic,
+        #vignette {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 4;
+        }
+
+        #scanlines {
+            background: repeating-linear-gradient(
+                180deg,
+                rgba(0, 0, 0, 0.15) 0px,
+                rgba(0, 0, 0, 0.15) 1px,
+                transparent 2px,
+                transparent 4px
+            );
+            mix-blend-mode: soft-light;
+            opacity: 0.5;
+            animation: scanline 8s linear infinite;
+        }
+
+        #noise {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)' opacity='0.25'/%3E%3C/svg%3E");
+            opacity: 0.18;
+            mix-blend-mode: soft-light;
+            animation: noise 1s steps(2, end) infinite;
+        }
+
+        #chromatic {
+            background: linear-gradient(90deg, rgba(255, 79, 123, 0.12), rgba(0, 240, 255, 0.1));
+            mix-blend-mode: screen;
+            opacity: 0.35;
+            animation: chroma 10s ease-in-out infinite;
+        }
+
+        #vignette {
+            background: radial-gradient(circle at center, transparent 40%, rgba(2, 5, 8, 0.85) 100%);
+        }
+
+        #scroll-track {
+            height: 520vh;
+        }
+
+        @keyframes voxel-flicker {
+            0%, 100% {
+                opacity: 0.7;
+            }
+            40% {
+                opacity: 0.2;
+            }
+            60% {
+                opacity: 0.9;
+            }
+        }
+
+        @keyframes frame-glitch {
+            0%, 100% {
+                opacity: 0.35;
+                transform: translate3d(2px, 0, 8px);
+            }
+            45% {
+                opacity: 0.7;
+                transform: translate3d(-3px, 1px, 12px);
+            }
+            60% {
+                opacity: 0.2;
+                transform: translate3d(1px, -1px, 4px);
+            }
+        }
+
+        @keyframes scanline {
+            0% {
+                transform: translateY(-20%);
+            }
+            100% {
+                transform: translateY(20%);
+            }
+        }
+
+        @keyframes noise {
+            0%, 100% {
+                transform: translate3d(0, 0, 0);
+            }
+            50% {
+                transform: translate3d(-10px, 12px, 0);
+            }
+        }
+
+        @keyframes chroma {
+            0%, 100% {
+                opacity: 0.25;
+            }
+            50% {
+                opacity: 0.45;
+            }
+        }
+
+        @media (max-width: 720px) {
+            #hero {
+                padding: 0 8vw;
+            }
+
+            .hero-title {
+                font-size: clamp(1.9rem, 7.2vw, 3.2rem);
+            }
+
+            .post-frame {
+                width: min(92vw, 500px);
+            }
+
+            .frame-inner {
+                padding: 18px 20px;
+            }
+
+            #scroll-hint {
+                letter-spacing: 0.16em;
+                font-size: 0.68rem;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation: none !important;
+                transition: none !important;
+            }
+        }
+    </style>
 </head>
 <body>
+    <div id="hero">
+        <div class="hero-inner">
+            <h1 class="hero-title">Human-Computer Interaction for Mixed<br>Reality (CSC_5IG01_TP)</h1>
+            <p class="hero-subtitle">Soheil Lotfi, Arsalan Masoudifard</p>
+        </div>
+    </div>
+    <div id="scroll-hint">Scroll to move <span>forward</span></div>
 
-    <div class="container py-4">
-        
-        <header class="d-flex flex-column flex-md-row align-items-center justify-content-between vh-100 border-bottom position-relative mb-0 pb-0">
-            <div class="header-left flex-fill d-flex flex-column justify-content-center text-center pe-md-5 position-relative z-1">
-                <h1 class="name display-4 fw-bold mb-3">Human-Computer Interaction for Mixed Reality (CSC_5IG01_TP)</h1>
-                <p class="bio lead text-body-secondary mx-auto" style="max-width: 600px;">
-                    Soheil Lotfi, Arsalan Masoudifard
-                </p>
-            </div>
-            <div class="header-right flex-fill d-flex justify-content-center align-items-center mb-4 mb-md-0">
-                <img id="header-image" src="styles/1.png" alt="Header Image" class="img-fluid rounded-3" style="width: 180%; max-width: none; cursor: pointer;">
-            </div>
-        </header>
-
-        <nav class="filter-nav sticky-top bg-body py-3 border-bottom z-3 d-flex flex-wrap gap-2">
-            <button class="filter-btn btn btn-link text-decoration-none text-secondary fs-4 fw-bold p-0 me-3 active" onclick="filterProjects('all', this)">All</button>
-            <button class="filter-btn btn btn-link text-decoration-none text-secondary fs-4 fw-bold p-0 me-3" onclick="filterProjects('Labs', this)">Labs</button>
-            <button class="filter-btn btn btn-link text-decoration-none text-secondary fs-4 fw-bold p-0 me-3" onclick="filterProjects('Lectures', this)">Lectures</button>
-            <button class="filter-btn btn btn-link text-decoration-none text-secondary fs-4 fw-bold p-0 me-3" onclick="filterProjects('Project', this)">Project</button>
-        </nav>
-
-        <main class="row py-5 g-5" id="gallery">
-            
-            <article class="project-card col-12 col-md-6" data-category="Labs" data-id="lab-1">
-                <div class="card h-100 border-0 bg-transparent">
-                    <figure class="image-container overflow-hidden rounded-3 position-relative mb-3 bg-light" style="padding-top: 66%;">
-                        <img src="images/blog_image.jpg" alt="blog setup" class="position-absolute top-0 start-0 w-100 h-100 object-fit-cover transition-transform">
-                        <figcaption class="d-none">blog setup</figcaption>
-                    </figure>
-                    <div class="project-info">
-                        <h3 class="project-title h5 mb-2 text-body-emphasis">
-                            <strong>Lab 1:</strong> Blog Setup
-                        </h3>
-                        <div class="tags d-flex flex-wrap gap-2">
-                            <span class="badge rounded-pill border text-body-secondary fw-normal">2025</span>
-                            <span class="badge rounded-pill border text-body-secondary fw-normal">Lab homework</span>
-                            <span class="badge rounded-pill border text-body-secondary fw-normal">Tutorial</span>
-                        </div>
-                    </div>
-                </div>
-            </article>
-
-            <article class="project-card col-12 col-md-6" data-category="Labs" data-id="lab-2">
-                <div class="card h-100 border-0 bg-transparent">
-                    <figure class="image-container overflow-hidden rounded-3 position-relative mb-3 bg-light" style="padding-top: 66%;">
-                        <img src="images/unity_setup_image.jpg" alt="unity setup" class="position-absolute top-0 start-0 w-100 h-100 object-fit-cover transition-transform">
-                        <figcaption class="d-none">unity setup</figcaption>
-                    </figure>
-                    <div class="project-info">
-                        <h3 class="project-title h5 mb-2 text-body-emphasis">
-                            <strong>Lab 2:</strong> Unity Setup
-                        </h3>
-                        <div class="tags d-flex flex-wrap gap-2">
-                            <span class="badge rounded-pill border text-body-secondary fw-normal">2025</span>
-                            <span class="badge rounded-pill border text-body-secondary fw-normal">Lab homework</span>
-                            <span class="badge rounded-pill border text-body-secondary fw-normal">Tutorial</span>
-                        </div>
-                    </div>
-                </div>
-            </article>
-
-            <article class="project-card col-12 col-md-6" data-category="Lectures" data-id="lecture-1">
-                <div class="card h-100 border-0 bg-transparent">
-                    <figure class="image-container overflow-hidden rounded-3 position-relative mb-3 bg-light" style="padding-top: 66%;">
-                        <img src="images/VR_fail_image.jpg" alt="VR Fails" class="position-absolute top-0 start-0 w-100 h-100 object-fit-cover transition-transform">
-                        <figcaption class="d-none">VR Fails</figcaption>
-                    </figure>
-                    <div class="project-info">
-                        <h3 class="project-title h5 mb-2 text-body-emphasis">
-                            <strong>Lecture 1:</strong> VR Fails
-                        </h3>
-                        <div class="tags d-flex flex-wrap gap-2">
-                            <span class="badge rounded-pill border text-body-secondary fw-normal">2025</span>
-                            <span class="badge rounded-pill border text-body-secondary fw-normal">Lecture Homework</span>
-                            <span class="badge rounded-pill border text-body-secondary fw-normal">Post</span>
-                        </div>
-                    </div>
-                </div>
-            </article>
-
-            <article class="project-card col-12 col-md-6" data-category="Project" data-id="project-1">
-                <div class="card h-100 border-0 bg-transparent">
-                    <figure class="image-container overflow-hidden rounded-3 position-relative mb-3 bg-light" style="padding-top: 66%;">
-                        <img src="https://images.unsplash.com/photo-1616348436168-de43ad0db179?q=80&w=1000&auto=format&fit=crop" alt="Widget Interface" class="position-absolute top-0 start-0 w-100 h-100 object-fit-cover transition-transform">
-                        <figcaption class="d-none">Widget Interface</figcaption>
-                    </figure>
-                    <div class="project-info">
-                        <h3 class="project-title h5 mb-2 text-body-emphasis">
-                            <strong>Final Project:</strong> Locomotion
-                        </h3>
-                        <div class="tags d-flex flex-wrap gap-2">
-                            <span class="badge rounded-pill border text-body-secondary fw-normal">2026</span>
-                            <span class="badge rounded-pill border text-body-secondary fw-normal">Final Project</span>
-                            <span class="badge rounded-pill border text-body-secondary fw-normal">Demo</span>
-                        </div>
-                    </div>
-                </div>
-            </article>
-
-        </main>
-
-        <div id="project-detail" class="d-none">
-            <button id="back-btn" class="btn btn-link text-decoration-none text-secondary fw-bold p-0 mb-4 d-flex align-items-center" onclick="showGallery()">Back to Projects</button>
-            <h2 id="detail-title" class="display-5 mb-4 text-body-emphasis"></h2>
-            <figure class="mb-5">
-                <img id="detail-image" src="" alt="" class="img-fluid rounded-3 w-100 object-fit-cover" style="max-height: 600px;">
-            </figure>
-            <div id="detail-content" class="markdown-body"></div>
+    <div id="viewport">
+        <div id="scene">
+            <div id="grid-plane"></div>
+            <div id="voxel-field"></div>
+            <div id="posts"></div>
         </div>
     </div>
 
-    <script src="https://unpkg.com/powerglitch@latest/dist/powerglitch.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.6/dist/purify.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
-    <script src="script.js"></script>
+    <div id="scanlines"></div>
+    <div id="noise"></div>
+    <div id="chromatic"></div>
+    <div id="vignette"></div>
+    <div id="intro-dim"></div>
+    <div id="scroll-track"></div>
+
+    <script>
+        const posts = [
+            {
+                title: "Entry 01: Calibration Drift",
+                meta: "Lab Session / 2025.01",
+                body: "Stabilize the headset horizon while the matrix stutters. Anchor the frame, capture the signal.",
+                tags: ["lab", "sensor", "drift"]
+            },
+            {
+                title: "Entry 02: Latency Mirage",
+                meta: "Lecture Notes / 2025.02",
+                body: "Delayed perception folds into itself. The room repeats, but the data stays coherent.",
+                tags: ["latency", "perception", "notes"]
+            },
+            {
+                title: "Entry 03: Holo Console",
+                meta: "Prototype / 2025.03",
+                body: "A floating console surfaces in the noise. Controls stay sharp while the background jitters.",
+                tags: ["ui", "prototype", "vr"]
+            },
+            {
+                title: "Entry 04: Signal Ritual",
+                meta: "Project Log / 2025.04",
+                body: "Gesture-based inputs become ritual. Each frame locks in before dissolving into static.",
+                tags: ["gesture", "ritual", "log"]
+            },
+            {
+                title: "Entry 05: Archive Echo",
+                meta: "Field Study / 2025.05",
+                body: "Posts echo behind you as glowing traces. The matrix retains every sequence.",
+                tags: ["archive", "echo", "field"]
+            }
+        ];
+
+        const spacing = 2300;
+        const scatterX = 220;
+        const scatterY = 140;
+        const postsEl = document.getElementById("posts");
+        const voxelField = document.getElementById("voxel-field");
+        const scrollTrack = document.getElementById("scroll-track");
+        const scene = document.getElementById("scene");
+        const hero = document.getElementById("hero");
+        const scrollHint = document.getElementById("scroll-hint");
+        const introDim = document.getElementById("intro-dim");
+
+        const totalDepth = (posts.length - 1) * spacing + 2800;
+        const introDepth = 5400;
+        scrollTrack.style.height = `${Math.max(520, posts.length * 140)}vh`;
+
+        posts.forEach((post, index) => {
+            const frame = document.createElement("article");
+            frame.className = "post-frame";
+            const z = -index * spacing;
+            const x = (Math.random() * 2 - 1) * scatterX;
+            const y = (Math.random() * 2 - 1) * scatterY;
+            frame.style.setProperty("--x", `${x}px`);
+            frame.style.setProperty("--y", `${y}px`);
+            frame.style.setProperty("--z", `${z}px`);
+            frame.dataset.z = z;
+
+            frame.innerHTML = `
+                <div class="frame-inner">
+                    <div class="frame-index">FRAME ${String(index + 1).padStart(2, "0")}</div>
+                    <h2 class="frame-title">${post.title}</h2>
+                    <div class="frame-meta">${post.meta}</div>
+                    <p class="frame-body">${post.body}</p>
+                    <div class="frame-tags">
+                        ${post.tags.map((tag) => `<span class="frame-tag">${tag}</span>`).join("")}
+                    </div>
+                </div>
+            `;
+
+            postsEl.appendChild(frame);
+        });
+
+        for (let i = 0; i < 160; i += 1) {
+            const voxel = document.createElement("span");
+            voxel.className = "voxel";
+            const x = (Math.random() * 2 - 1) * 1200;
+            const y = (Math.random() * 2 - 1) * 800;
+            const z = -Math.random() * (totalDepth + 3000);
+            voxel.style.transform = `translate3d(${x}px, ${y}px, ${z}px)`;
+            voxel.style.animationDelay = `${Math.random() * 2}s`;
+            voxelField.appendChild(voxel);
+        }
+
+        let targetZ = -introDepth;
+        let currentZ = -introDepth;
+        let scrollProgress = 0;
+        let tiltX = 0;
+        let tiltY = 0;
+
+        function clamp(value, min, max) {
+            return Math.min(Math.max(value, min), max);
+        }
+
+        function updateFrameVisibility(depth) {
+            const frames = document.querySelectorAll(".post-frame");
+            frames.forEach((frame) => {
+                const z = parseFloat(frame.dataset.z);
+                const distance = Math.abs(z + depth);
+                const fade = 1 - distance / 2800;
+                const opacity = clamp(fade, 0.05, 1);
+                frame.style.opacity = opacity.toFixed(2);
+                frame.style.filter = `blur(${clamp((1 - opacity) * 3.5, 0, 3)}px)`;
+            });
+        }
+
+        function onScroll() {
+            const maxScroll = document.body.scrollHeight - window.innerHeight;
+            scrollProgress = maxScroll > 0 ? window.scrollY / maxScroll : 0;
+            targetZ = scrollProgress * (totalDepth + introDepth) - introDepth;
+        }
+
+        function onPointerMove(event) {
+            const nx = (event.clientX / window.innerWidth) - 0.5;
+            const ny = (event.clientY / window.innerHeight) - 0.5;
+            tiltY = nx * 6;
+            tiltX = -ny * 4;
+        }
+
+        function animate() {
+            currentZ += (targetZ - currentZ) * 0.08;
+            scene.style.transform = `translateZ(${currentZ}px) rotateX(${tiltX}deg) rotateY(${tiltY}deg)`;
+            updateFrameVisibility(currentZ);
+            const introProgress = clamp((currentZ + introDepth) / introDepth, 0, 1);
+            const heroOpacity = clamp(1 - introProgress * 2, 0, 1);
+            if (hero) {
+                hero.style.opacity = heroOpacity.toFixed(2);
+                hero.style.transform = `translate3d(0, ${introProgress * -50}px, 0)`;
+            }
+            if (scrollHint) {
+                scrollHint.style.opacity = clamp(heroOpacity * 0.9, 0, 0.9).toFixed(2);
+            }
+            if (introDim) {
+                const dimOpacity = clamp(0.55 * (1 - introProgress), 0, 0.55);
+                introDim.style.opacity = dimOpacity.toFixed(2);
+            }
+            requestAnimationFrame(animate);
+        }
+
+        window.addEventListener("scroll", onScroll, { passive: true });
+        window.addEventListener("pointermove", onPointerMove);
+        window.addEventListener("resize", onScroll);
+
+        onScroll();
+        animate();
+    </script>
 </body>
 </html>
