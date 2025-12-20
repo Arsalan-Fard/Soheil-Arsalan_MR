@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-bs-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,119 +7,127 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.2.0/github-markdown.min.css">
     <link rel="stylesheet" href="styles/styles.css">
 </head>
 <body>
 
-    <div class="container">
+    <div class="container py-4">
         
-        <header class="full-screen-header">
-            <!-- <button id="theme-toggle" class="theme-toggle" aria-label="Toggle dark mode">
-                <svg class="moon-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
-                <svg class="sun-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
-            </button> -->
-            <div class="header-left">
-                <h1 class="name">Human-Computer Interaction for Mixed Reality (CSC_5IG01_TP)</h1>
-                <p class="bio">
+        <header class="d-flex flex-column flex-md-row align-items-center justify-content-between vh-100 border-bottom position-relative mb-0 pb-0">
+            <div class="header-left flex-fill d-flex flex-column justify-content-center text-center pe-md-5 position-relative z-1">
+                <h1 class="name display-4 fw-bold mb-3">Human-Computer Interaction for Mixed Reality (CSC_5IG01_TP)</h1>
+                <p class="bio lead text-body-secondary mx-auto" style="max-width: 600px;">
                     Soheil Lotfi, Arsalan Masoudifard
                 </p>
             </div>
-            <div class="header-right">
-                <img id="header-image" src="styles/1.png" alt="Header Image">
+            <div class="header-right flex-fill d-flex justify-content-center align-items-center mb-4 mb-md-0">
+                <img id="header-image" src="styles/1.png" alt="Header Image" class="img-fluid rounded-3" style="width: 180%; max-width: none; cursor: pointer;">
             </div>
         </header>
 
-        <nav class="filter-nav">
-            <button class="filter-btn active" onclick="filterProjects('all', this)">All</button>
-            <button class="filter-btn" onclick="filterProjects('Labs', this)">Labs</button>
-            <button class="filter-btn" onclick="filterProjects('Lectures', this)">Lectures</button>
-            <button class="filter-btn" onclick="filterProjects('Project', this)">Project</button>
+        <nav class="filter-nav sticky-top bg-body py-3 border-bottom z-3 d-flex flex-wrap gap-2">
+            <button class="filter-btn btn btn-link text-decoration-none text-secondary fs-4 fw-bold p-0 me-3 active" onclick="filterProjects('all', this)">All</button>
+            <button class="filter-btn btn btn-link text-decoration-none text-secondary fs-4 fw-bold p-0 me-3" onclick="filterProjects('Labs', this)">Labs</button>
+            <button class="filter-btn btn btn-link text-decoration-none text-secondary fs-4 fw-bold p-0 me-3" onclick="filterProjects('Lectures', this)">Lectures</button>
+            <button class="filter-btn btn btn-link text-decoration-none text-secondary fs-4 fw-bold p-0 me-3" onclick="filterProjects('Project', this)">Project</button>
         </nav>
 
-        <main class="project-grid" id="gallery">
+        <main class="row py-5 g-5" id="gallery">
             
-            <article class="project-card" data-category="Labs" data-id="lab-1">
-                <figure class="image-container">
-                    <img src="images/blog_image.jpg" alt="blog setup">
-                    <figcaption>blog setup</figcaption>
-                    <!-- <div class="badge">RUNNER UP<br>CORE77 AWARDS</div> -->
-                </figure>
-                <div class="project-info">
-                    <h3 class="project-title">
-                        <strong>Lab 1:</strong> Blog Setup
-                    </h3>
-                    <div class="tags">
-                        <span class="tag">2025</span>
-                        <span class="tag">Lab homework</span>
-                        <span class="tag">Tutorial</span>
+            <article class="project-card col-12 col-md-6" data-category="Labs" data-id="lab-1">
+                <div class="card h-100 border-0 bg-transparent">
+                    <figure class="image-container overflow-hidden rounded-3 position-relative mb-3 bg-light" style="padding-top: 66%;">
+                        <img src="images/blog_image.jpg" alt="blog setup" class="position-absolute top-0 start-0 w-100 h-100 object-fit-cover transition-transform">
+                        <figcaption class="d-none">blog setup</figcaption>
+                    </figure>
+                    <div class="project-info">
+                        <h3 class="project-title h5 mb-2 text-body-emphasis">
+                            <strong>Lab 1:</strong> Blog Setup
+                        </h3>
+                        <div class="tags d-flex flex-wrap gap-2">
+                            <span class="badge rounded-pill border text-body-secondary fw-normal">2025</span>
+                            <span class="badge rounded-pill border text-body-secondary fw-normal">Lab homework</span>
+                            <span class="badge rounded-pill border text-body-secondary fw-normal">Tutorial</span>
+                        </div>
                     </div>
                 </div>
             </article>
 
-            <article class="project-card" data-category="Labs" data-id="lab-2">
-                <figure class="image-container">
-                    <img src="images/unity_setup_image.jpg" alt="unity setup">
-                    <figcaption>unity setup</figcaption>
-                </figure>
-                <div class="project-info">
-                    <h3 class="project-title">
-                        <strong>Lab 2:</strong> Unity Setup
-                    </h3>
-                    <div class="tags">
-                        <span class="tag">2025</span>
-                        <span class="tag">Lab homework</span>
-                        <span class="tag">Tutorial</span>
+            <article class="project-card col-12 col-md-6" data-category="Labs" data-id="lab-2">
+                <div class="card h-100 border-0 bg-transparent">
+                    <figure class="image-container overflow-hidden rounded-3 position-relative mb-3 bg-light" style="padding-top: 66%;">
+                        <img src="images/unity_setup_image.jpg" alt="unity setup" class="position-absolute top-0 start-0 w-100 h-100 object-fit-cover transition-transform">
+                        <figcaption class="d-none">unity setup</figcaption>
+                    </figure>
+                    <div class="project-info">
+                        <h3 class="project-title h5 mb-2 text-body-emphasis">
+                            <strong>Lab 2:</strong> Unity Setup
+                        </h3>
+                        <div class="tags d-flex flex-wrap gap-2">
+                            <span class="badge rounded-pill border text-body-secondary fw-normal">2025</span>
+                            <span class="badge rounded-pill border text-body-secondary fw-normal">Lab homework</span>
+                            <span class="badge rounded-pill border text-body-secondary fw-normal">Tutorial</span>
+                        </div>
                     </div>
                 </div>
             </article>
 
-            <article class="project-card" data-category="Lectures" data-id="lecture-1">
-                <figure class="image-container">
-                    <img src="images/VR_fail_image.jpg" alt="VR Fails">
-                    <figcaption>VR Fails</figcaption>
-                </figure>
-                <div class="project-info">
-                    <h3 class="project-title">
-                        <strong>Lecture 1:</strong> VR Fails
-                    </h3>
-                    <div class="tags">
-                        <span class="tag">2025</span>
-                        <span class="tag">Lecture Homework</span>
-                        <span class="tag">Post</span>
+            <article class="project-card col-12 col-md-6" data-category="Lectures" data-id="lecture-1">
+                <div class="card h-100 border-0 bg-transparent">
+                    <figure class="image-container overflow-hidden rounded-3 position-relative mb-3 bg-light" style="padding-top: 66%;">
+                        <img src="images/VR_fail_image.jpg" alt="VR Fails" class="position-absolute top-0 start-0 w-100 h-100 object-fit-cover transition-transform">
+                        <figcaption class="d-none">VR Fails</figcaption>
+                    </figure>
+                    <div class="project-info">
+                        <h3 class="project-title h5 mb-2 text-body-emphasis">
+                            <strong>Lecture 1:</strong> VR Fails
+                        </h3>
+                        <div class="tags d-flex flex-wrap gap-2">
+                            <span class="badge rounded-pill border text-body-secondary fw-normal">2025</span>
+                            <span class="badge rounded-pill border text-body-secondary fw-normal">Lecture Homework</span>
+                            <span class="badge rounded-pill border text-body-secondary fw-normal">Post</span>
+                        </div>
                     </div>
                 </div>
             </article>
 
-            <article class="project-card" data-category="Project" data-id="project-1">
-                <figure class="image-container">
-                    <img src="https://images.unsplash.com/photo-1616348436168-de43ad0db179?q=80&w=1000&auto=format&fit=crop" alt="Widget Interface">
-                    <figcaption>Widget Interface</figcaption>
-                </figure>
-                <div class="project-info">
-                    <h3 class="project-title">
-                        <strong>Final Project:</strong> Locomotion
-                    </h3>
-                    <div class="tags">
-                        <span class="tag">2026</span>
-                        <span class="tag">Final Project</span>
-                        <span class="tag">Demo</span>
+            <article class="project-card col-12 col-md-6" data-category="Project" data-id="project-1">
+                <div class="card h-100 border-0 bg-transparent">
+                    <figure class="image-container overflow-hidden rounded-3 position-relative mb-3 bg-light" style="padding-top: 66%;">
+                        <img src="https://images.unsplash.com/photo-1616348436168-de43ad0db179?q=80&w=1000&auto=format&fit=crop" alt="Widget Interface" class="position-absolute top-0 start-0 w-100 h-100 object-fit-cover transition-transform">
+                        <figcaption class="d-none">Widget Interface</figcaption>
+                    </figure>
+                    <div class="project-info">
+                        <h3 class="project-title h5 mb-2 text-body-emphasis">
+                            <strong>Final Project:</strong> Locomotion
+                        </h3>
+                        <div class="tags d-flex flex-wrap gap-2">
+                            <span class="badge rounded-pill border text-body-secondary fw-normal">2026</span>
+                            <span class="badge rounded-pill border text-body-secondary fw-normal">Final Project</span>
+                            <span class="badge rounded-pill border text-body-secondary fw-normal">Demo</span>
+                        </div>
                     </div>
                 </div>
             </article>
 
         </main>
 
-        <div id="project-detail" class="hidden">
-            <button id="back-btn" onclick="showGallery()">Back to Projects</button>
-            <h2 id="detail-title"></h2>
-            <figure>
-                <img id="detail-image" src="" alt="">
+        <div id="project-detail" class="d-none">
+            <button id="back-btn" class="btn btn-link text-decoration-none text-secondary fw-bold p-0 mb-4 d-flex align-items-center" onclick="showGallery()">Back to Projects</button>
+            <h2 id="detail-title" class="display-5 mb-4 text-body-emphasis"></h2>
+            <figure class="mb-5">
+                <img id="detail-image" src="" alt="" class="img-fluid rounded-3 w-100 object-fit-cover" style="max-height: 600px;">
             </figure>
-            <div id="detail-content"></div>
+            <div id="detail-content" class="markdown-body"></div>
         </div>
     </div>
 
     <script src="https://unpkg.com/powerglitch@latest/dist/powerglitch.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.6/dist/purify.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
     <script src="script.js"></script>
 </body>
 </html>
