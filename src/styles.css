@@ -44,6 +44,51 @@
       overflow-x: hidden;
   }
 
+  body.intro-preload,
+  body.intro-running {
+      overflow: hidden;
+  }
+
+  body.intro-preload #hero,
+  body.intro-preload #scroll-hint {
+      opacity: 0;
+      transform: translate3d(0, 18px, 0);
+      filter: blur(3px);
+  }
+
+  body.intro-preload #scanlines,
+  body.intro-preload #noise,
+  body.intro-preload #chromatic {
+      opacity: 0;
+  }
+
+  body.intro-running::before,
+  body.intro-running::after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 6;
+  }
+
+  body.intro-running::before {
+      background:
+          linear-gradient(90deg, rgba(0, 240, 255, 0.0), rgba(0, 240, 255, 0.08), rgba(255, 79, 123, 0.0)),
+          repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.0) 0px, rgba(255, 255, 255, 0.0) 18px, rgba(255, 255, 255, 0.06) 19px, rgba(255, 255, 255, 0.0) 28px);
+      mix-blend-mode: screen;
+      opacity: 0;
+      animation: intro-flash 1100ms ease-out 1 forwards;
+  }
+
+  body.intro-running::after {
+      background:
+          linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.75) 38%, rgba(0, 0, 0, 0) 70%),
+          linear-gradient(90deg, rgba(255, 79, 123, 0.08), rgba(0, 240, 255, 0.08));
+      mix-blend-mode: color-dodge;
+      opacity: 0;
+      animation: intro-slice 1000ms steps(2, end) 1 forwards;
+  }
+
   #hero {
       position: fixed;
       inset: 0;
@@ -60,6 +105,10 @@
       max-width: 1100px;
   }
 
+  body.intro-revealing .hero-inner {
+      animation: intro-jitter 900ms steps(2, end) 1 both;
+  }
+
   .hero-title {
       font-family: "Space Grotesk", "Trebuchet MS", sans-serif;
       font-size: clamp(2.2rem, 4.4vw, 4.6rem);
@@ -74,11 +123,22 @@
       animation: gradientFlow 6s ease infinite;
   }
 
+  body.intro-revealing .hero-title {
+      filter:
+          drop-shadow(0 0 0 rgba(0, 240, 255, 0.0))
+          drop-shadow(0 0 0 rgba(255, 79, 123, 0.0));
+      animation: intro-title-glitch 1050ms steps(2, end) 1 both;
+  }
+
   .hero-subtitle {
       margin: 0;
       font-size: clamp(1rem, 1.6vw, 1.4rem);
       letter-spacing: 0.02em;
       color: var(--muted);
+  }
+
+  body.intro-revealing .hero-subtitle {
+      animation: intro-subtitle 900ms ease-out 1 both;
   }
 
   #scroll-hint {
@@ -93,6 +153,10 @@
       color: var(--muted);
       opacity: 0.85;
       pointer-events: none;
+  }
+
+  body.intro-preload #scroll-hint {
+      opacity: 0;
   }
 
   #scroll-hint span {
@@ -367,6 +431,20 @@
       z-index: 4;
   }
 
+  #scanlines,
+  #noise,
+  #chromatic {
+      transition: opacity 650ms ease;
+  }
+
+  body.intro-revealing #scanlines {
+      opacity: 0.85;
+  }
+
+  body.intro-revealing #chromatic {
+      opacity: 0.55;
+  }
+
   #scanlines {
       background: repeating-linear-gradient(180deg,
               rgba(0, 0, 0, 0.15) 0px,
@@ -466,6 +544,124 @@
 
       50% {
           opacity: 0.45;
+      }
+  }
+
+  @keyframes intro-flash {
+      0% {
+          opacity: 0;
+          transform: translate3d(0, -2%, 0);
+      }
+
+      20% {
+          opacity: 0.9;
+      }
+
+      55% {
+          opacity: 0.25;
+      }
+
+      100% {
+          opacity: 0;
+          transform: translate3d(0, 2%, 0);
+      }
+  }
+
+  @keyframes intro-slice {
+      0% {
+          opacity: 0;
+          transform: translate3d(0, -8%, 0) skewX(0deg);
+      }
+
+      15% {
+          opacity: 1;
+          transform: translate3d(0, 5%, 0) skewX(-10deg);
+      }
+
+      45% {
+          opacity: 0.6;
+          transform: translate3d(0, -3%, 0) skewX(8deg);
+      }
+
+      100% {
+          opacity: 0;
+          transform: translate3d(0, 0, 0) skewX(0deg);
+      }
+  }
+
+  @keyframes intro-jitter {
+      0% {
+          transform: translate3d(0, 14px, 0) skewX(0deg);
+          opacity: 0;
+          filter: blur(4px);
+      }
+
+      12% {
+          transform: translate3d(-10px, 10px, 0) skewX(-8deg);
+      }
+
+      28% {
+          transform: translate3d(12px, 0, 0) skewX(10deg);
+          filter: blur(1px);
+      }
+
+      40% {
+          transform: translate3d(-6px, -6px, 0) skewX(-6deg);
+      }
+
+      60% {
+          transform: translate3d(4px, 0, 0) skewX(3deg);
+          opacity: 1;
+          filter: blur(0px);
+      }
+
+      100% {
+          transform: translate3d(0, 0, 0) skewX(0deg);
+          opacity: 1;
+      }
+  }
+
+  @keyframes intro-title-glitch {
+      0% {
+          transform: translate3d(0, 0, 0);
+          filter:
+              drop-shadow(-18px 0 0 rgba(255, 79, 123, 0.45))
+              drop-shadow(18px 0 0 rgba(0, 240, 255, 0.35));
+      }
+
+      30% {
+          transform: translate3d(-4px, 0, 0);
+          filter:
+              drop-shadow(-8px 0 0 rgba(255, 79, 123, 0.65))
+              drop-shadow(10px 0 0 rgba(0, 240, 255, 0.45));
+      }
+
+      55% {
+          transform: translate3d(6px, 0, 0);
+          filter:
+              drop-shadow(-10px 0 0 rgba(255, 79, 123, 0.35))
+              drop-shadow(8px 0 0 rgba(0, 240, 255, 0.55));
+      }
+
+      100% {
+          transform: translate3d(0, 0, 0);
+          filter:
+              drop-shadow(-2px 0 0 rgba(255, 79, 123, 0.25))
+              drop-shadow(2px 0 0 rgba(0, 240, 255, 0.25));
+      }
+  }
+
+  @keyframes intro-subtitle {
+      0% {
+          opacity: 0;
+          transform: translate3d(0, 10px, 0);
+          filter: blur(2px);
+      }
+
+      100% {
+          opacity: 1;
+          transform: translate3d(0, 0, 0);
+          filter: blur(0);
       }
   }
 

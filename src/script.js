@@ -364,10 +364,90 @@ let currentTranslateX = 0;
 let hasReachedIntersection = false;
 let isTyping = false;
 
+const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+let isIntroActive = !prefersReducedMotion;
+let introRevealStart = 0;
+let introRevealDurationMs = 1100;
+let introLock = null;
+
 console.log(`Starting Camera Position: X=${currentTranslateX}, Y=0, Z=${currentZ}`);
 
 function clamp(value, min, max) {
     return Math.min(Math.max(value, min), max);
+}
+
+function easeOutCubic(t) {
+    return 1 - Math.pow(1 - t, 3);
+}
+
+function startIntro() {
+    if (!isIntroActive) {
+        if (document.body) {
+            document.body.classList.remove('intro-preload');
+        }
+        return;
+    }
+
+    const html = document.documentElement;
+    const body = document.body;
+    if (!body) return;
+
+    introLock = {
+        htmlOverflow: html.style.overflow,
+        bodyOverflow: body.style.overflow
+    };
+
+    html.style.overflow = 'hidden';
+    body.style.overflow = 'hidden';
+    window.scrollTo(0, 0);
+
+    body.classList.remove('intro-preload');
+    body.classList.add('intro-running');
+
+    if (hero) {
+        hero.style.opacity = '0';
+        hero.style.transform = 'translate3d(0, 0, 0)';
+    }
+    if (scrollHint) {
+        scrollHint.style.opacity = '0';
+    }
+
+    introRevealStart = performance.now() + 180;
+    body.classList.add('intro-revealing');
+
+    const skip = () => finishIntro(true);
+    window.addEventListener('keydown', skip, { once: true });
+    window.addEventListener('pointerdown', skip, { once: true });
+}
+
+function finishIntro(immediate = false) {
+    if (!isIntroActive) return;
+    isIntroActive = false;
+
+    const html = document.documentElement;
+    const body = document.body;
+    if (body) {
+        body.classList.remove('intro-running');
+        body.classList.remove('intro-revealing');
+    }
+
+    if (introLock) {
+        html.style.overflow = introLock.htmlOverflow;
+        if (body) body.style.overflow = introLock.bodyOverflow;
+        introLock = null;
+    } else {
+        html.style.overflow = '';
+        if (body) body.style.overflow = '';
+    }
+
+    if (immediate) {
+        if (hero) {
+            hero.style.opacity = '1';
+            hero.style.transform = 'translate3d(0, 0, 0)';
+        }
+    }
+
+    onScroll();
 }
 
 // Typewriter effect function
@@ -407,6 +487,7 @@ function updateFrameVisibility(depth) {
 
 
 function onScroll() {
+    if (isIntroActive) return;
     const maxScroll = document.body.scrollHeight - window.innerHeight;
     scrollProgress = maxScroll > 0 ? window.scrollY / maxScroll : 0;
     targetZ = scrollProgress * (totalDepth + introDepth) - introDepth;
@@ -426,6 +507,31 @@ function animate() {
     currentTranslateX += (targetTranslateX - currentTranslateX) * 0.08;
     scene.style.transform = `translate3d(${-currentTranslateX}px, 0, ${currentZ}px) rotateX(${tiltX}deg) rotateY(${tiltY + currentRotationY}deg)`;
     updateFrameVisibility(currentZ);
+
+    if (isIntroActive) {
+        const now = performance.now();
+        const t = clamp((now - introRevealStart) / introRevealDurationMs, 0, 1);
+        const eased = easeOutCubic(t);
+
+        if (hero) {
+            hero.style.opacity = eased.toFixed(2);
+            hero.style.transform = 'translate3d(0, 0, 0)';
+        }
+        if (scrollHint) {
+            scrollHint.style.opacity = clamp(eased * 0.9, 0, 0.9).toFixed(2);
+        }
+        if (introDim) {
+            introDim.style.opacity = clamp(0.25 * (1 - eased), 0, 0.25).toFixed(2);
+        }
+
+        if (t >= 1) {
+            finishIntro(false);
+        }
+
+        drawMinimap();
+        requestAnimationFrame(animate);
+        return;
+    }
 
     // Detect intersection arrival (when currentZ is close to 0, meaning we've reached the frames)
     if (!hasReachedIntersection && currentZ >= -500 && currentZ <= 500) {
@@ -455,5 +561,6 @@ window.addEventListener("scroll", onScroll, { passive: true });
 window.addEventListener("pointermove", onPointerMove);
 window.addEventListener("resize", onScroll);
 
+startIntro();
 onScroll();
 animate();
