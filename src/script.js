@@ -1,60 +1,75 @@
 const posts = [
     {
-        title: "Projects",
+        title: "Lecture and Project",
         meta: "Main Track",
-        body: "Explore our main project portfolio and research initiatives.",
+        body: "The project subject is Locomotion. You can see presentations, demos and final project in this path.",
         tags: ["projects", "main"],
         isProjects: true
     },
     {
         title: "Lab Assignments",
         meta: "Lab Track",
-        body: "View lab sessions, experiments, and hands-on assignments.",
+        body: "This path shows lab assignments. You can see unity projects about a ball in Telecom paris!",
         tags: ["lab", "assignments"],
         isLabAssignments: true
     },
     {
-        title: "Lecture Assignments",
-        meta: "Lecture Track",
-        body: "Access lecture materials, notes, and theoretical assignments.",
-        tags: ["lecture", "theory"],
-        isLectureAssignments: true
+        title: "Tutorials",
+        meta: "Tutorial Track",
+        body: "Learn how to setup a blog like this. And also how to setup Unity 6 for your VR projects.",
+        tags: ["Tutorial", "theory"],
+        isTutorialAssignments: true
     },
     {
-        title: "Lab 01: Sensor Calibration",
-        meta: "Lab Session / Week 2",
-        body: "Hands-on sensor calibration and drift correction experiments.",
-        tags: ["lab", "sensors", "calibration"],
+        title: "Lab 01: The Ball",
+        meta: "2025.12.25",
+        body: "--",
+        tags: ["--"],
         isLabRoute: true
     },
     {
-        title: "Entry 02: Latency Mirage",
-        meta: "Lecture Notes / 2025.02",
-        body: "Delayed perception folds into itself. The room repeats, but the data stays coherent.",
-        tags: ["latency", "perception", "notes"],
-        isLectureRoute: true
+        title: "Lab 02: The VR Ball",
+        meta: "2025.12.25",
+        body: "--",
+        tags: ["--"],
+        isLabRoute: true
     },
     {
-        title: "Entry 03: Holo Console",
-        meta: "Prototype / 2025.03",
-        body: "A floating console surfaces in the noise. Controls stay sharp while the background jitters.",
-        tags: ["ui", "prototype", "vr"],
+        title: "Tutorial 01: Blog Setup",
+        meta: "2025.12.18",
+        body: "This section provides you quick tips about how this blog is created and deployed on github.",
+        tags: ["ThreeJS", "GitHub Pages"],
+        isTutorialRoute: true
+    },
+    {
+        title: "Tutorial 02: Unity Setup",
+        meta: "2025.12.20",
+        body: "This section provides you quick tips about how to setup Unity 6.",
+        tags: ["Unity 6"],
+        isTutorialRoute: true
+    },
+    {
+        title: "Lecture 01: Three Locomotion Techniques",
+        meta: "2025.12.08",
+        body: "...",
+        tags: ["Presentation", "Locomotion", "MR"],
         isProjectRoute: true
     },
     {
-        title: "Entry 04: Signal Ritual",
-        meta: "Project Log / 2025.04",
-        body: "Gesture-based inputs become ritual. Each frame locks in before dissolving into static.",
-        tags: ["gesture", "ritual", "log"],
+        title: "Lecture 02: Proposing our Locomotion Technique",
+        meta: "-",
+        body: "...",
+        tags: ["Presentation", "Locomotion", "MR"],
         isProjectRoute: true
     },
     {
-        title: "Entry 05: Archive Echo",
-        meta: "Field Study / 2025.05",
-        body: "Posts echo behind you as glowing traces. The matrix retains every sequence.",
-        tags: ["archive", "echo", "field"],
+        title: "Project 01: ...",
+        meta: "-",
+        body: "...",
+        tags: ["Presentation", "Locomotion", "MR"],
         isProjectRoute: true
-    }
+    },
+
 ];
 
 const spacing = 2300;
@@ -83,7 +98,7 @@ const mapPoints = [];
 let mapBounds = { minX: 0, maxX: 0, minZ: -totalDepth, maxZ: introDepth };
 
 let labCount = 0;
-let lectureCount = 0;
+let TutorialCount = 0;
 let projectCount = 0;
 
 posts.forEach((post, index) => {
@@ -112,12 +127,12 @@ posts.forEach((post, index) => {
         // Map to center (overlap with index 0 for "one dot" effect)
         mapX = 0; mapZ = 0;
     } else if (index === 2) {
-        // Lecture Assignments frame
+        // Tutorial Assignments frame
         z = 200;
         x = -450;
         y = 0;
         rotateY = 45;
-        frame.classList.add("lecture-assignments", "intersection-frame");
+        frame.classList.add("Tutorial-assignments", "intersection-frame");
         // Map to center
         mapX = 0; mapZ = 0;
     } else if (post.isLabRoute) {
@@ -131,14 +146,14 @@ posts.forEach((post, index) => {
         // Keep actual position for map
         mapX = x;
         mapZ = z;
-    } else if (post.isLectureRoute) {
-        // Lecture Branch
-        lectureCount++;
-        z = -lectureCount * spacing * Math.cos(Math.PI / 4);
-        x = -600 - lectureCount * spacing * Math.sin(Math.PI / 4);
+    } else if (post.isTutorialRoute) {
+        // Tutorial Branch
+        TutorialCount++;
+        z = -TutorialCount * spacing * Math.cos(Math.PI / 4);
+        x = -600 - TutorialCount * spacing * Math.sin(Math.PI / 4);
         y = 0;
         rotateY = 45;
-        frame.classList.add("lecture-assignments");
+        frame.classList.add("Tutorial-assignments");
         // Keep actual position for map
         mapX = x;
         mapZ = z;
@@ -170,15 +185,17 @@ posts.forEach((post, index) => {
     frame.style.setProperty("--rotateY", `${rotateY}deg`);
     frame.dataset.z = z;
 
+    // Check if this is an intersection frame (indices 0, 1, 2)
+    const isIntersectionFrame = index <= 2;
+
     frame.innerHTML = `
                 <div class="frame-inner">
-                    <div class="frame-index">FRAME ${String(index + 1).padStart(2, "0")}</div>
                     <h2 class="frame-title">${post.title}</h2>
                     <div class="frame-meta">${post.meta}</div>
                     <p class="frame-body">${post.body}</p>
-                    <div class="frame-tags">
+                    ${!isIntersectionFrame ? `<div class="frame-tags">
                         ${post.tags.map((tag) => `<span class="frame-tag">${tag}</span>`).join("")}
-                    </div>
+                    </div>` : ''}
                 </div>
             `;
 
@@ -195,7 +212,7 @@ posts.forEach((post, index) => {
             targetTranslateX = 350; // Move camera to the right (adjust this value)
         });
         frame.style.pointerEvents = "auto";
-    } else if (post.isLectureAssignments) {
+    } else if (post.isTutorialAssignments) {
         frame.addEventListener("click", () => {
             targetRotationY = -45; // Rotate 45 degrees to the left
             targetTranslateX = -350; // Move camera to the left (adjust this value)
@@ -272,17 +289,17 @@ function drawMinimap() {
         ctx.beginPath();
         ctx.moveTo(getMapX(0), getMapY(0)); // Intersection point
         ctx.lineTo(getMapX(labFrame.x), getMapY(labFrame.z));
-        ctx.strokeStyle = 'rgba(255, 79, 123, 0.4)';
+        ctx.strokeStyle = 'rgba(0, 240, 255, 0.2)';
         ctx.stroke();
     }
 
-    // Lecture Branch Line
-    const lectureFrame = mapPoints.find(p => p.originalIndex === 4);
-    if (lectureFrame) {
+    // Tutorial Branch Line
+    const TutorialFrame = mapPoints.find(p => p.originalIndex === 4);
+    if (TutorialFrame) {
         ctx.beginPath();
         ctx.moveTo(getMapX(0), getMapY(0)); // Intersection point
-        ctx.lineTo(getMapX(lectureFrame.x), getMapY(lectureFrame.z));
-        ctx.strokeStyle = 'rgba(147, 112, 219, 0.4)';
+        ctx.lineTo(getMapX(TutorialFrame.x), getMapY(TutorialFrame.z));
+        ctx.strokeStyle = 'rgba(0, 240, 255, 0.2)';
         ctx.stroke();
     }
 
@@ -298,8 +315,8 @@ function drawMinimap() {
 
         let color = 'rgba(143, 176, 196, 0.5)';
         if (p.type === 'node') color = '#00f0ff';
-        if (p.originalIndex === 3) color = '#ff4f7b';
-        if (p.originalIndex === 4) color = '#9370db';
+        if (p.originalIndex === 3) color = '#00f0ff';
+        if (p.originalIndex === 4) color = '#00f0ff';
 
         ctx.fillStyle = color;
         ctx.fill();
@@ -502,13 +519,12 @@ function onPointerMove(event) {
     tiltY = nx * 6;
     tiltX = -ny * 4;
 
+    // Update cursor position directly with transform (more performant)
     if (cursorDot) {
-        cursorDot.style.left = `${event.clientX}px`;
-        cursorDot.style.top = `${event.clientY}px`;
+        cursorDot.style.transform = `translate3d(${event.clientX}px, ${event.clientY}px, 0) translate(-50%, -50%)`;
     }
     if (cursorRing) {
-        cursorRing.style.left = `${event.clientX}px`;
-        cursorRing.style.top = `${event.clientY}px`;
+        cursorRing.style.transform = `translate3d(${event.clientX}px, ${event.clientY}px, 0) translate(-50%, -50%)`;
     }
 }
 
@@ -559,7 +575,7 @@ function animate() {
     if (!hasReachedIntersection && currentZ >= -500 && currentZ <= 500) {
         hasReachedIntersection = true;
         intersectionHint.classList.add('visible');
-        typeWriter('> SELECT TRACK _ Navigate your pathway through the matrix', typedText, 60);
+        typeWriter('> CLICK ON A TRACK: Continue scrolling to see more.', typedText, 60);
     }
 
     const introProgress = clamp((currentZ + introDepth) / introDepth, 0, 1);

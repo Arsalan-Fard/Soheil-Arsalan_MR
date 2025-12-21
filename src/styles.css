@@ -389,25 +389,25 @@
       color: var(--accent);
   }
 
-  .post-frame.lecture-assignments .frame-inner {
+  .post-frame.Tutorial-assignments .frame-inner {
       border-color: rgba(147, 112, 219, 0.5);
   }
 
-  .post-frame.lecture-assignments::before {
+  .post-frame.Tutorial-assignments::before {
       border-color: rgba(138, 43, 226, 0.5);
   }
 
-  .post-frame.lecture-assignments::after {
+  .post-frame.Tutorial-assignments::after {
       border-color: rgba(147, 112, 219, 0.35);
   }
 
-  .post-frame.lecture-assignments .frame-index,
-  .post-frame.lecture-assignments .frame-title {
+  .post-frame.Tutorial-assignments .frame-index,
+  .post-frame.Tutorial-assignments .frame-title {
       color: #9370db;
       text-shadow: 0 0 12px rgba(138, 43, 226, 0.45);
   }
 
-  .post-frame.lecture-assignments .frame-tag {
+  .post-frame.Tutorial-assignments .frame-tag {
       border-color: rgba(147, 112, 219, 0.5);
       color: #9370db;
   }
@@ -727,59 +727,54 @@
       overflow: hidden;
   }
 
-  #cursor-dot {
+  #cursor-dot, #cursor-ring {
+      will-change: transform;
       position: absolute;
       top: 0;
       left: 0;
+      pointer-events: none;
+  }
+
+  #cursor-dot {
       width: 4px;
       height: 4px;
       background-color: var(--glow);
       border-radius: 50%;
-      transform: translate(-50%, -50%);
-      transition: transform 0.1s ease, background-color 0.2s ease;
       box-shadow: 0 0 6px var(--glow);
-      opacity: 0.5;
+      opacity: 0.7;
+      transition: background-color 0.2s ease, width 0.2s ease, height 0.2s ease, box-shadow 0.2s ease;
   }
 
   #cursor-ring {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 20px;
-      height: 20px;
+      width: 28px;
+      height: 28px;
       border: 1px solid var(--glow);
       border-radius: 50%;
-      transform: translate(-50%, -50%);
-      transition: width 0.3s ease, height 0.3s ease, transform 0.1s ease, border-color 0.2s ease;
-      opacity: 0.5;
+      opacity: 0.7;
+      transition: width 0.2s ease, height 0.2s ease, border-color 0.2s ease, border-style 0.2s ease;
   }
 
   /* Hover State */
   body.hovering #cursor-dot {
-      transform: translate(-50%, -50%) scale(1.4);
+      width: 6px;
+      height: 6px;
       background-color: var(--accent);
       box-shadow: 0 0 10px var(--accent);
-      opacity: 0.8;
+      opacity: 1;
   }
 
   body.hovering #cursor-ring {
-      width: 30px;
-      height: 30px;
+      width: 44px;
+      height: 44px;
       border-color: var(--accent);
-      animation: rotateRing 4s linear infinite;
       border-style: dashed;
-      opacity: 0.7;
+      opacity: 0.8;
   }
 
   /* Click State */
   body.clicking #cursor-dot {
-      transform: translate(-50%, -50%) scale(0.5);
-  }
-
-  body.clicking #cursor-ring {
-      width: 30px;
-      height: 30px;
-      border-width: 2px;
+      width: 2px;
+      height: 2px;
   }
 
   @keyframes rotateRing {
