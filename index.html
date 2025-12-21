@@ -1,12 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Glitch Matrix Prototype</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500&family=Orbitron:wght@400;600;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500&family=Orbitron:wght@400;600;700&family=Space+Grotesk:wght@500;700&display=swap"
+        rel="stylesheet">
     <style>
         :root {
             color-scheme: dark;
@@ -24,9 +27,17 @@
         }
 
         @keyframes gradientFlow {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
+            0% {
+                background-position: 0% 50%;
+            }
+
+            50% {
+                background-position: 100% 50%;
+            }
+
+            100% {
+                background-position: 0% 50%;
+            }
         }
 
         * {
@@ -133,8 +144,16 @@
         }
 
         @keyframes blink {
-            0%, 50% { opacity: 1; }
-            51%, 100% { opacity: 0; }
+
+            0%,
+            50% {
+                opacity: 1;
+            }
+
+            51%,
+            100% {
+                opacity: 0;
+            }
         }
 
         #intro-dim {
@@ -347,13 +366,11 @@
         }
 
         #scanlines {
-            background: repeating-linear-gradient(
-                180deg,
-                rgba(0, 0, 0, 0.15) 0px,
-                rgba(0, 0, 0, 0.15) 1px,
-                transparent 2px,
-                transparent 4px
-            );
+            background: repeating-linear-gradient(180deg,
+                    rgba(0, 0, 0, 0.15) 0px,
+                    rgba(0, 0, 0, 0.15) 1px,
+                    transparent 2px,
+                    transparent 4px);
             mix-blend-mode: soft-light;
             opacity: 0.5;
             animation: scanline 8s linear infinite;
@@ -382,26 +399,34 @@
         }
 
         @keyframes voxel-flicker {
-            0%, 100% {
+
+            0%,
+            100% {
                 opacity: 0.7;
             }
+
             40% {
                 opacity: 0.2;
             }
+
             60% {
                 opacity: 0.9;
             }
         }
 
         @keyframes frame-glitch {
-            0%, 100% {
+
+            0%,
+            100% {
                 opacity: 0.35;
                 transform: translate3d(2px, 0, 8px);
             }
+
             45% {
                 opacity: 0.7;
                 transform: translate3d(-3px, 1px, 12px);
             }
+
             60% {
                 opacity: 0.2;
                 transform: translate3d(1px, -1px, 4px);
@@ -412,24 +437,31 @@
             0% {
                 transform: translateY(-20%);
             }
+
             100% {
                 transform: translateY(20%);
             }
         }
 
         @keyframes noise {
-            0%, 100% {
+
+            0%,
+            100% {
                 transform: translate3d(0, 0, 0);
             }
+
             50% {
                 transform: translate3d(-10px, 12px, 0);
             }
         }
 
         @keyframes chroma {
-            0%, 100% {
+
+            0%,
+            100% {
                 opacity: 0.25;
             }
+
             50% {
                 opacity: 0.45;
             }
@@ -466,6 +498,7 @@
         }
     </style>
 </head>
+
 <body>
     <div id="hero">
         <div class="hero-inner">
@@ -493,7 +526,7 @@
     <div id="vignette"></div>
     <div id="intro-dim"></div>
     <div id="scroll-track"></div>
-    
+
     <canvas id="minimap"></canvas>
 
     <style>
@@ -601,32 +634,32 @@
             if (index === 0) {
                 // Projects frame - CENTER of screen
                 z = 0;
-                x = 0; 
+                x = 0;
                 y = 0;
                 frame.classList.add("intersection-frame");
                 mapZ = 0;
             } else if (index === 1) {
                 // Lab Assignments frame
                 z = 200;
-                x = 450; 
+                x = 450;
                 y = 0;
-                rotateY = -45; 
+                rotateY = -45;
                 frame.classList.add("lab-assignments", "intersection-frame");
                 // Map to center (overlap with index 0 for "one dot" effect)
                 mapX = 0; mapZ = 0;
             } else if (index === 2) {
                 // Lecture Assignments frame
                 z = 200;
-                x = -450; 
+                x = -450;
                 y = 0;
-                rotateY = 45; 
+                rotateY = 45;
                 frame.classList.add("lecture-assignments", "intersection-frame");
                 // Map to center
                 mapX = 0; mapZ = 0;
             } else if (index === 3) {
                 // Lab 01 - Branch
                 z = -spacing * Math.cos(Math.PI / 4);
-                x = 600 + spacing * Math.sin(Math.PI / 4); 
+                x = 600 + spacing * Math.sin(Math.PI / 4);
                 y = 0;
                 rotateY = -45;
                 frame.classList.add("lab-assignments");
@@ -647,7 +680,7 @@
             // For indices 0, 1, 2, they map to (0,0). We can just add one of them or all (they overlap).
             // Let's add all to track them, but visually they are one.
             mapPoints.push({ x: mapX, z: mapZ, type: (index <= 2) ? 'node' : 'post', originalIndex: index });
-            
+
             // Update bounds for map (using symmetric X to keep 0 centered)
             const absX = Math.abs(mapX);
             mapBounds.maxX = Math.max(mapBounds.maxX, absX);
@@ -693,35 +726,41 @@
                 frame.style.pointerEvents = "auto";
             }
 
-            postsEl.appendChild(frame);
-        });
+        postsEl.appendChild(frame);
+    });
+
+        // End main track at the last main-track point (x === 0).
+        const mainTrackPoints = mapPoints.filter((point) => point.x === 0);
+        if (mainTrackPoints.length > 0) {
+            mapBounds.minZ = Math.min(...mainTrackPoints.map((point) => point.z));
+        }
 
         // Setup Minimap
         minimap.width = 400; // Double resolution for crispness
         minimap.height = 300;
-        
+
         function drawMinimap() {
             ctx.clearRect(0, 0, minimap.width, minimap.height);
-            
+
             const padding = 40;
             const availableWidth = minimap.width - padding * 2;
             const availableHeight = minimap.height - padding * 2;
-            
+
             // Calculate ranges
             // Z Range: roughly 15000 units (5400 start to -9200 end)
             // X Range: roughly 4500 units (+/- 2226)
             const rangeZ = mapBounds.maxZ - mapBounds.minZ;
             const rangeX = Math.max(mapBounds.maxX * 2, 2000); // Ensure minimal width
-            
+
             // Calculate Scale Factors for each dimension
             const scaleZ = availableHeight / rangeZ;
             const scaleX = availableWidth / rangeX;
-            
+
             // UNIFIED SCALE: Use the smaller scale to fit both dimensions within the box
             // This preserves the aspect ratio (angles).
             // Since the world is very long (Z) and narrow (X), scaleZ will likely be the limiting factor.
             const scale = Math.min(scaleZ, scaleX);
-            
+
             function getMapY(worldZ) {
                 // Map worldZ to canvas Y
                 // maxZ (Start) -> Bottom
@@ -737,12 +776,12 @@
                 const center = minimap.width / 2;
                 return center + (worldX * scale);
             }
-            
+
             // Draw Connection Lines
             ctx.beginPath();
             ctx.strokeStyle = 'rgba(0, 240, 255, 0.2)';
-            ctx.lineWidth = 1;
-            
+            ctx.lineWidth = 3;
+
             // Main Track (Index 0 -> End)
             // Just draw a line from (0, maxZ) to (0, minZ)
             ctx.moveTo(getMapX(0), getMapY(mapBounds.maxZ)); // Start
@@ -759,43 +798,47 @@
                 ctx.strokeStyle = 'rgba(255, 79, 123, 0.4)';
                 ctx.stroke();
             }
-            
+
             // Draw Points
             mapPoints.forEach((p, i) => {
                 if ((p.originalIndex === 1 || p.originalIndex === 2)) return;
 
                 const mx = getMapX(p.x);
                 const my = getMapY(p.z);
-                
+
                 ctx.beginPath();
-                ctx.arc(mx, my, p.type === 'node' ? 3 : 2, 0, Math.PI * 2);
+                ctx.arc(mx, my, p.type === 'node' ? 3 : 5, 0, Math.PI * 2);
                 ctx.fillStyle = p.originalIndex === 3 ? '#ff4f7b' : (p.type === 'node' ? '#00f0ff' : 'rgba(143, 176, 196, 0.5)');
                 ctx.fill();
             });
 
             // Draw Player
-            // Player Z is -currentZ
-            const playerWorldZ = -currentZ;
-            const playerWorldX = currentTranslateX;
+            const yRadian = -currentRotationY * Math.PI / 180;
+            const forward = -currentZ;
+
+            const playerWorldZ = forward * Math.cos(yRadian);;
+            const playerWorldX = currentTranslateX + forward * Math.sin(yRadian);;
 
             const px = getMapX(playerWorldX);
             const py = getMapY(playerWorldZ);
 
             ctx.beginPath();
             ctx.arc(px, py, 4, 0, Math.PI * 2);
-            ctx.fillStyle = '#ff4f7b';
+            ctx.fillStyle = '#ffffff';
             ctx.shadowBlur = 8;
             ctx.shadowColor = '#ff4f7b';
             ctx.fill();
             ctx.shadowBlur = 0;
-            
+
             // Start Point (Reference)
             const sx = getMapX(0);
             const sy = getMapY(introDepth);
             ctx.beginPath();
-            ctx.arc(sx, sy, 2, 0, Math.PI * 2);
-            ctx.fillStyle = 'rgba(255,255,255,0.5)';
-            ctx.fill();
+            ctx.moveTo(sx - 45, sy);
+            ctx.lineTo(sx + 45, sy);
+            ctx.strokeStyle = 'rgba(255,255,255,0.3)';
+            ctx.lineWidth = 1;
+            ctx.stroke();
         }
 
         console.log("--- Frame Layout Debug ---");
@@ -870,6 +913,8 @@
             });
         }
 
+        
+
         function onScroll() {
             const maxScroll = document.body.scrollHeight - window.innerHeight;
             scrollProgress = maxScroll > 0 ? window.scrollY / maxScroll : 0;
@@ -923,4 +968,5 @@
         animate();
     </script>
 </body>
+
 </html>
