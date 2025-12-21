@@ -161,9 +161,14 @@
             top: 50%;
             left: 50%;
             width: min(88vw, 640px);
-            transform: translate3d(calc(-50% + var(--x)), calc(-50% + var(--y)), var(--z));
+            transform: translate3d(calc(-50% + var(--x)), calc(-50% + var(--y)), var(--z)) rotateY(var(--rotateY, 0deg));
             transform-style: preserve-3d;
             transition: opacity 0.3s ease, filter 0.3s ease;
+            pointer-events: auto;
+        }
+
+        .post-frame.intersection-frame {
+            width: min(70vw, 450px);
         }
 
         .post-frame::before,
@@ -238,6 +243,61 @@
             color: var(--glow);
             text-transform: uppercase;
             letter-spacing: 0.08em;
+        }
+
+        .post-frame.lab-assignments .frame-inner {
+            border-color: var(--accent);
+        }
+
+        .post-frame.lab-assignments::before {
+            border-color: rgba(255, 79, 123, 0.5);
+        }
+
+        .post-frame.lab-assignments::after {
+            border-color: rgba(255, 79, 123, 0.35);
+        }
+
+        .post-frame.lab-assignments .frame-index,
+        .post-frame.lab-assignments .frame-title {
+            color: var(--accent);
+            text-shadow: 0 0 12px rgba(255, 79, 123, 0.45);
+        }
+
+        .post-frame.lab-assignments .frame-tag {
+            border-color: rgba(255, 79, 123, 0.5);
+            color: var(--accent);
+        }
+
+        .post-frame.lecture-assignments .frame-inner {
+            border-color: rgba(147, 112, 219, 0.5);
+        }
+
+        .post-frame.lecture-assignments::before {
+            border-color: rgba(138, 43, 226, 0.5);
+        }
+
+        .post-frame.lecture-assignments::after {
+            border-color: rgba(147, 112, 219, 0.35);
+        }
+
+        .post-frame.lecture-assignments .frame-index,
+        .post-frame.lecture-assignments .frame-title {
+            color: #9370db;
+            text-shadow: 0 0 12px rgba(138, 43, 226, 0.45);
+        }
+
+        .post-frame.lecture-assignments .frame-tag {
+            border-color: rgba(147, 112, 219, 0.5);
+            color: #9370db;
+        }
+
+        .post-frame {
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .post-frame:hover {
+            transform: translate3d(calc(-50% + var(--x)), calc(-50% + var(--y)), calc(var(--z) + 20px)) rotateY(var(--rotateY, 0deg));
         }
 
         #scanlines,
@@ -397,10 +457,32 @@
     <script>
         const posts = [
             {
-                title: "Entry 01: Calibration Drift",
-                meta: "Lab Session / 2025.01",
-                body: "Stabilize the headset horizon while the matrix stutters. Anchor the frame, capture the signal.",
-                tags: ["lab", "sensor", "drift"]
+                title: "Projects",
+                meta: "Main Track",
+                body: "Explore our main project portfolio and research initiatives.",
+                tags: ["projects", "main"],
+                isProjects: true
+            },
+            {
+                title: "Lab Assignments",
+                meta: "Lab Track",
+                body: "View lab sessions, experiments, and hands-on assignments.",
+                tags: ["lab", "assignments"],
+                isLabAssignments: true
+            },
+            {
+                title: "Lecture Assignments",
+                meta: "Lecture Track",
+                body: "Access lecture materials, notes, and theoretical assignments.",
+                tags: ["lecture", "theory"],
+                isLectureAssignments: true
+            },
+            {
+                title: "Lab 01: Sensor Calibration",
+                meta: "Lab Session / Week 2",
+                body: "Hands-on sensor calibration and drift correction experiments.",
+                tags: ["lab", "sensors", "calibration"],
+                isLabRoute: true
             },
             {
                 title: "Entry 02: Latency Mirage",
@@ -446,12 +528,47 @@
         posts.forEach((post, index) => {
             const frame = document.createElement("article");
             frame.className = "post-frame";
-            const z = -index * spacing;
-            const x = (Math.random() * 2 - 1) * scatterX;
-            const y = (Math.random() * 2 - 1) * scatterY;
+
+            // Position intersection frames and routes
+            let z, x, y, rotateY = 0;
+            if (index === 0) {
+                // Projects frame - CENTER of screen
+                z = 0;
+                x = 0; // Centered
+                y = 0;
+                frame.classList.add("intersection-frame");
+            } else if (index === 1) {
+                // Lab Assignments frame - to the right and rotated
+                z = 200;
+                x = 600; // To the right of center
+                y = 0;
+                rotateY = -45; // Rotate 45 degrees to face the camera when rotated right
+                frame.classList.add("lab-assignments", "intersection-frame");
+            } else if (index === 2) {
+                // Lecture Assignments frame - to the left and rotated
+                z = 200;
+                x = -600; // To the left of center
+                y = 0;
+                rotateY = 45; // Rotate 45 degrees to face the camera when rotated left
+                frame.classList.add("lecture-assignments", "intersection-frame");
+            } else if (index === 3) {
+                // Lab 01 - first frame in the red route (45 degree path to the right)
+                z = -spacing * Math.cos(Math.PI / 4);
+                x = 600 + spacing * Math.sin(Math.PI / 4); // Continue from Lab Assignments position
+                y = 0;
+                rotateY = -45;
+                frame.classList.add("lab-assignments");
+            } else {
+                // Other frames continue as before, but start from index 4
+                z = -(index - 3) * spacing;
+                x = (Math.random() * 2 - 1) * scatterX;
+                y = (Math.random() * 2 - 1) * scatterY;
+            }
+
             frame.style.setProperty("--x", `${x}px`);
             frame.style.setProperty("--y", `${y}px`);
             frame.style.setProperty("--z", `${z}px`);
+            frame.style.setProperty("--rotateY", `${rotateY}deg`);
             frame.dataset.z = z;
 
             frame.innerHTML = `
@@ -465,6 +582,24 @@
                     </div>
                 </div>
             `;
+
+            // Add click handlers
+            if (post.isProjects) {
+                frame.addEventListener("click", () => {
+                    targetRotationY = 0; // Rotate back to center
+                });
+                frame.style.pointerEvents = "auto";
+            } else if (post.isLabAssignments) {
+                frame.addEventListener("click", () => {
+                    targetRotationY = 45; // Rotate 45 degrees to the right
+                });
+                frame.style.pointerEvents = "auto";
+            } else if (post.isLectureAssignments) {
+                frame.addEventListener("click", () => {
+                    targetRotationY = -45; // Rotate 45 degrees to the left
+                });
+                frame.style.pointerEvents = "auto";
+            }
 
             postsEl.appendChild(frame);
         });
@@ -485,6 +620,8 @@
         let scrollProgress = 0;
         let tiltX = 0;
         let tiltY = 0;
+        let targetRotationY = 0;
+        let currentRotationY = 0;
 
         function clamp(value, min, max) {
             return Math.min(Math.max(value, min), max);
@@ -517,7 +654,8 @@
 
         function animate() {
             currentZ += (targetZ - currentZ) * 0.08;
-            scene.style.transform = `translateZ(${currentZ}px) rotateX(${tiltX}deg) rotateY(${tiltY}deg)`;
+            currentRotationY += (targetRotationY - currentRotationY) * 0.08;
+            scene.style.transform = `translateZ(${currentZ}px) rotateX(${tiltX}deg) rotateY(${tiltY + currentRotationY}deg)`;
             updateFrameVisibility(currentZ);
             const introProgress = clamp((currentZ + introDepth) / introDepth, 0, 1);
             const heroOpacity = clamp(1 - introProgress * 2, 0, 1);
