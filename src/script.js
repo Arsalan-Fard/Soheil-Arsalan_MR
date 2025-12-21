@@ -4,21 +4,24 @@ const posts = [
         meta: "Main Track",
         body: "The project subject is Locomotion. You can see presentations, demos and final project in this path.",
         tags: ["projects", "main"],
-        isProjects: true
+        isProjects: true,
+        slug: "main-track"
     },
     {
         title: "Lab Assignments",
         meta: "Lab Track",
         body: "This path shows lab assignments. You can see unity projects about a ball in Telecom paris!",
         tags: ["lab", "assignments"],
-        isLabAssignments: true
+        isLabAssignments: true,
+        slug: "lab-track"
     },
     {
         title: "Tutorials",
         meta: "Tutorial Track",
         body: "Learn how to setup a blog like this. And also how to setup Unity 6 for your VR projects.",
         tags: ["Tutorial", "theory"],
-        isTutorialAssignments: true
+        isTutorialAssignments: true,
+        slug: "tutorial-track"
     },
     
     {
@@ -26,28 +29,32 @@ const posts = [
         meta: "2025.12.25",
         body: "--",
         tags: ["--"],
-        isLabRoute: true
+        isLabRoute: true,
+        slug: "lab-01"
     },
     {
         title: "Lab 02: The VR Ball",
         meta: "2025.12.25",
         body: "--",
         tags: ["--"],
-        isLabRoute: true
+        isLabRoute: true,
+        slug: "lab-02"
     },
     {
         title: "Tutorial 01: Blog Setup",
         meta: "2025.12.18",
         body: "This section provides you quick tips about how this blog is created and deployed on github.",
         tags: ["ThreeJS", "GitHub Pages"],
-        isTutorialRoute: true
+        isTutorialRoute: true,
+        slug: "tutorial-01"
     },
     {
         title: "Tutorial 02: Unity Setup",
         meta: "2025.12.20",
         body: "This section provides you quick tips about how to setup Unity 6.",
         tags: ["Unity 6"],
-        isTutorialRoute: true
+        isTutorialRoute: true,
+        slug: "tutorial-02"
     },
     
     {
@@ -55,21 +62,24 @@ const posts = [
         meta: "2025.12.08",
         body: "...",
         tags: ["Presentation", "Locomotion", "MR"],
-        isProjectRoute: true
+        isProjectRoute: true,
+        slug: "lecture-01"
     },
     {
         title: "Lecture 02: Proposing our Locomotion Technique",
         meta: "-",
         body: "...",
         tags: ["Presentation", "Locomotion", "MR"],
-        isProjectRoute: true
+        isProjectRoute: true,
+        slug: "lecture-02"
     },
     {
         title: "Project 01: ...",
         meta: "-",
         body: "...",
         tags: ["Presentation", "Locomotion", "MR"],
-        isProjectRoute: true
+        isProjectRoute: true,
+        slug: "project-01"
     },
 
 ];
@@ -218,6 +228,15 @@ posts.forEach((post, index) => {
         frame.addEventListener("click", () => {
             targetRotationY = -45; // Rotate 45 degrees to the left
             targetTranslateX = -350; // Move camera to the left (adjust this value)
+        });
+        frame.style.pointerEvents = "auto";
+    } else {
+        // Generic Post Click
+        frame.addEventListener("click", (e) => {
+            e.stopPropagation();
+            if (post.slug) {
+                window.location.hash = post.slug;
+            }
         });
         frame.style.pointerEvents = "auto";
     }
@@ -391,6 +410,7 @@ let targetTranslateX = 0;
 let currentTranslateX = 0;
 let hasReachedIntersection = false;
 let isTyping = false;
+let lastScrollY = 0;
 
 const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 let isIntroActive = !prefersReducedMotion;
@@ -514,13 +534,7 @@ function updateFrameVisibility(depth) {
 
 
 
-function onScroll() {
-    if (isIntroActive) return;
-    const maxScroll = document.body.scrollHeight - window.innerHeight;
-    scrollProgress = maxScroll > 0 ? window.scrollY / maxScroll : 0;
-    targetZ = scrollProgress * (totalDepth + introDepth) - introDepth;
-    console.log(`Current Position (Target): Z=${targetZ.toFixed(2)}, Scroll=${scrollProgress.toFixed(3)}`);
-}
+
 
 function onPointerMove(event) {
     const nx = (event.clientX / window.innerWidth) - 0.5;
@@ -611,3 +625,77 @@ window.addEventListener("resize", onScroll);
 startIntro();
 onScroll();
 animate();
+
+// Blog Routing Logic
+const blogView = document.getElementById('blog-view');
+const backButton = document.getElementById('back-button');
+const blogTitle = document.getElementById('blog-title');
+const blogMeta = document.getElementById('blog-meta');
+const blogImage = document.getElementById('blog-image');
+const blogBody = document.getElementById('blog-body');
+const viewport = document.getElementById('viewport');
+
+function handleHashChange() {
+    const hash = window.location.hash.substring(1); // Remove #
+    const post = posts.find(p => p.slug === hash);
+
+    if (post) {
+        // Save current scroll position before opening blog
+        lastScrollY = window.scrollY;
+
+        // Show Blog
+        blogView.classList.remove('hidden');
+        viewport.style.opacity = '0'; // Hide 3D scene visually
+        minimap.style.display = 'none'; // Hide Minimap
+        document.body.style.overflow = 'hidden'; // Lock 3D Scroll
+        
+        blogTitle.textContent = post.title;
+        blogMeta.textContent = post.meta + ' | ' + post.tags.join(', ');
+        
+        // Placeholder image logic
+        blogImage.src = 'https://via.placeholder.com/800x400/001018/00f0ff?text=' + encodeURIComponent(post.title); 
+        
+        // Use placeholder text if body is short/empty or generic
+        if (post.body.length < 50 || post.body === '...' || post.body === '--') {
+             blogBody.innerHTML = `
+                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+                <p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+                <p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.</p>
+            `;
+        } else {
+            blogBody.textContent = post.body;
+        }
+
+    } else {
+        // Hide Blog
+        blogView.classList.add('hidden');
+        viewport.style.opacity = '1';
+        minimap.style.display = 'block'; // Show Minimap
+        document.body.style.overflow = ''; // Unlock 3D Scroll
+        
+        // Restore scroll position
+        if (lastScrollY > 0) {
+            window.scrollTo(0, lastScrollY);
+        }
+    }
+}
+
+window.addEventListener('hashchange', handleHashChange);
+backButton.addEventListener('click', () => {
+    window.location.hash = ''; // Clear hash to go back
+});
+
+function onScroll() {
+    if (isIntroActive) return;
+    // Stop 3D scroll update if blog is open
+    if (!blogView.classList.contains('hidden')) return;
+
+    const maxScroll = document.body.scrollHeight - window.innerHeight;
+    scrollProgress = maxScroll > 0 ? window.scrollY / maxScroll : 0;
+    targetZ = scrollProgress * (totalDepth + introDepth) - introDepth;
+    console.log(`Current Position (Target): Z=${targetZ.toFixed(2)}, Scroll=${scrollProgress.toFixed(3)}`);
+}
+
+// Initial check in case user loads with hash
+handleHashChange();
+
