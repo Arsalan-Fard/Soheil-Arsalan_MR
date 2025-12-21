@@ -1,3 +1,5 @@
+@use 'variables' as *;
+
 #hero {
     position: fixed;
     inset: 0;
@@ -23,7 +25,7 @@ body.intro-revealing .hero-inner {
 }
 
 .hero-title {
-    font-family: "Space Grotesk", "Trebuchet MS", sans-serif;
+    font-family: $font-hero;
     font-size: clamp(2.2rem, 4.4vw, 4.6rem);
     line-height: 1.1;
     margin: 0 0 16px;
@@ -114,7 +116,7 @@ body.intro-revealing .hero-subtitle {
         linear-gradient(90deg, transparent 95%, rgba(0, 240, 255, 0.08) 98%);
     background-size: 80px 80px;
     transform: translate3d(0, 200px, -5000px) rotateX(86deg);
-    opacity: 0.6;
+    opacity: 0.8;
     pointer-events: none;
 }
 

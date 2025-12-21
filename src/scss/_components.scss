@@ -1,10 +1,12 @@
+@use 'variables' as *;
+
 #intersection-hint-3d {
     position: absolute;
     top: -60px;
     left: 50%;
     transform: translateX(-50%);
     width: 100%;
-    font-family: "Orbitron", "Trebuchet MS", sans-serif;
+    font-family: $font-display;
     font-size: 1rem;
     letter-spacing: 0.1em;
     color: var(--glow);
@@ -86,7 +88,7 @@
     }
 
     .frame-index {
-        font-family: "Orbitron", "Trebuchet MS", sans-serif;
+        font-family: $font-display;
         font-size: 0.9rem;
         letter-spacing: 0.2em;
         color: var(--glow);
@@ -94,7 +96,7 @@
     }
 
     .frame-title {
-        font-family: "Orbitron", "Trebuchet MS", sans-serif;
+        font-family: $font-display;
         font-size: 1.85rem;
         margin: 0 0 10px;
         text-shadow: 0 0 12px rgba(0, 240, 255, 0.35);
@@ -132,6 +134,20 @@
         transform: translate3d(calc(-50% + var(--x)), calc(-50% + var(--y)), calc(var(--z) + 20px)) rotateY(var(--rotateY, 0deg));
     }
 
+    @mixin frame-recolor($color, $shadow-color, $border-op-1, $border-op-2) {
+        .frame-inner { border-color: $color; }
+        &::before { border-color: $border-op-1; }
+        &::after { border-color: $border-op-2; }
+        .frame-index, .frame-title { 
+            color: $color; 
+            text-shadow: 0 0 12px $shadow-color; 
+        }
+        .frame-tag { 
+            border-color: $border-op-1; 
+            color: $color; 
+        }
+    }
+
     /* Projects/Main Track Styles */
     &.project-assignments {
         .frame-inner { border-color: var(--glow); }
@@ -140,19 +156,11 @@
     }
 
     &.lab-assignments {
-        .frame-inner { border-color: var(--accent); }
-        &::before { border-color: rgba(255, 79, 123, 0.5); }
-        &::after { border-color: rgba(255, 79, 123, 0.35); }
-        .frame-index, .frame-title { color: var(--accent); text-shadow: 0 0 12px rgba(255, 79, 123, 0.45); }
-        .frame-tag { border-color: rgba(255, 79, 123, 0.5); color: var(--accent); }
+        @include frame-recolor(var(--accent), rgba(255, 79, 123, 0.45), rgba(255, 79, 123, 0.5), rgba(255, 79, 123, 0.35));
     }
 
     &.Tutorial-assignments {
-        .frame-inner { border-color: rgba(147, 112, 219, 0.5); }
-        &::before { border-color: rgba(138, 43, 226, 0.5); }
-        &::after { border-color: rgba(147, 112, 219, 0.35); }
-        .frame-index, .frame-title { color: #9370db; text-shadow: 0 0 12px rgba(138, 43, 226, 0.45); }
-        .frame-tag { border-color: rgba(147, 112, 219, 0.5); color: #9370db; }
+        @include frame-recolor(#9370db, rgba(138, 43, 226, 0.45), rgba(138, 43, 226, 0.5), rgba(147, 112, 219, 0.35));
     }
 
     @media (max-width: 720px) {
