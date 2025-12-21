@@ -20,6 +20,7 @@ const posts = [
         tags: ["Tutorial", "theory"],
         isTutorialAssignments: true
     },
+    
     {
         title: "Lab 01: The Ball",
         meta: "2025.12.25",
@@ -48,6 +49,7 @@ const posts = [
         tags: ["Unity 6"],
         isTutorialRoute: true
     },
+    
     {
         title: "Lecture 01: Three Locomotion Techniques",
         meta: "2025.12.08",
@@ -283,22 +285,23 @@ function drawMinimap() {
     ctx.stroke();
 
     // Lab Branch Line
-    // From (0,0) (Intersection) to Frame 3 Position
-    const labFrame = mapPoints.find(p => p.originalIndex === 3);
-    if (labFrame) {
+    const labPoints = mapPoints.filter(p => posts[p.originalIndex].isLabRoute);
+    if (labPoints.length > 0) {
+        const lastLabPoint = labPoints.reduce((prev, curr) => (curr.z < prev.z ? curr : prev));
         ctx.beginPath();
         ctx.moveTo(getMapX(0), getMapY(0)); // Intersection point
-        ctx.lineTo(getMapX(labFrame.x), getMapY(labFrame.z));
+        ctx.lineTo(getMapX(lastLabPoint.x), getMapY(lastLabPoint.z));
         ctx.strokeStyle = 'rgba(0, 240, 255, 0.2)';
         ctx.stroke();
     }
 
     // Tutorial Branch Line
-    const TutorialFrame = mapPoints.find(p => p.originalIndex === 4);
-    if (TutorialFrame) {
+    const tutorialPoints = mapPoints.filter(p => posts[p.originalIndex].isTutorialRoute);
+    if (tutorialPoints.length > 0) {
+        const lastTutorialPoint = tutorialPoints.reduce((prev, curr) => (curr.z < prev.z ? curr : prev));
         ctx.beginPath();
         ctx.moveTo(getMapX(0), getMapY(0)); // Intersection point
-        ctx.lineTo(getMapX(TutorialFrame.x), getMapY(TutorialFrame.z));
+        ctx.lineTo(getMapX(lastTutorialPoint.x), getMapY(lastTutorialPoint.z));
         ctx.strokeStyle = 'rgba(0, 240, 255, 0.2)';
         ctx.stroke();
     }
@@ -315,9 +318,7 @@ function drawMinimap() {
 
         let color = 'rgba(143, 176, 196, 0.5)';
         if (p.type === 'node') color = '#00f0ff';
-        if (p.originalIndex === 3) color = '#00f0ff';
-        if (p.originalIndex === 4) color = '#00f0ff';
-
+        
         ctx.fillStyle = color;
         ctx.fill();
     });
