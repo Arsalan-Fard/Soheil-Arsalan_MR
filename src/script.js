@@ -71,6 +71,8 @@ const intersectionHint = document.getElementById("intersection-hint");
 const typedText = document.getElementById("typed-text");
 const minimap = document.getElementById("minimap");
 const ctx = minimap.getContext("2d");
+const cursorDot = document.getElementById("cursor-dot");
+const cursorRing = document.getElementById("cursor-ring");
 
 const totalDepth = (posts.length - 1) * spacing + 2800;
 const introDepth = 5400;
@@ -499,7 +501,27 @@ function onPointerMove(event) {
     const ny = (event.clientY / window.innerHeight) - 0.5;
     tiltY = nx * 6;
     tiltX = -ny * 4;
+
+    if (cursorDot) {
+        cursorDot.style.left = `${event.clientX}px`;
+        cursorDot.style.top = `${event.clientY}px`;
+    }
+    if (cursorRing) {
+        cursorRing.style.left = `${event.clientX}px`;
+        cursorRing.style.top = `${event.clientY}px`;
+    }
 }
+
+document.addEventListener("mousedown", () => document.body.classList.add("clicking"));
+document.addEventListener("mouseup", () => document.body.classList.remove("clicking"));
+
+document.addEventListener("mouseover", (e) => {
+    if (e.target.closest("a, button, .post-frame, input, select, textarea")) {
+        document.body.classList.add("hovering");
+    } else {
+        document.body.classList.remove("hovering");
+    }
+});
 
 function animate() {
     currentZ += (targetZ - currentZ) * 0.08;

@@ -259,7 +259,7 @@
       box-shadow: 0 0 12px rgba(0, 240, 255, 0.45);
       transform-style: preserve-3d;
       animation: voxel-flicker 3s steps(2, end) infinite;
-      opacity: 0.7;
+      opacity: 0.8;
   }
 
   .post-frame {
@@ -706,3 +706,86 @@
       pointer-events: none;
       opacity: 0.8;
   }
+
+  /* Custom Cursor */
+  body {
+      cursor: none;
+  }
+
+  a, button, .post-frame, input, select, textarea {
+      cursor: none;
+  }
+
+  #cursor-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 9999;
+      overflow: hidden;
+  }
+
+  #cursor-dot {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 4px;
+      height: 4px;
+      background-color: var(--glow);
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      transition: transform 0.1s ease, background-color 0.2s ease;
+      box-shadow: 0 0 6px var(--glow);
+      opacity: 0.5;
+  }
+
+  #cursor-ring {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 20px;
+      height: 20px;
+      border: 1px solid var(--glow);
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      transition: width 0.3s ease, height 0.3s ease, transform 0.1s ease, border-color 0.2s ease;
+      opacity: 0.5;
+  }
+
+  /* Hover State */
+  body.hovering #cursor-dot {
+      transform: translate(-50%, -50%) scale(1.4);
+      background-color: var(--accent);
+      box-shadow: 0 0 10px var(--accent);
+      opacity: 0.8;
+  }
+
+  body.hovering #cursor-ring {
+      width: 30px;
+      height: 30px;
+      border-color: var(--accent);
+      animation: rotateRing 4s linear infinite;
+      border-style: dashed;
+      opacity: 0.7;
+  }
+
+  /* Click State */
+  body.clicking #cursor-dot {
+      transform: translate(-50%, -50%) scale(0.5);
+  }
+
+  body.clicking #cursor-ring {
+      width: 30px;
+      height: 30px;
+      border-width: 2px;
+  }
+
+  @keyframes rotateRing {
+      from { transform: translate(-50%, -50%) rotate(0deg); }
+      to { transform: translate(-50%, -50%) rotate(360deg); }
+  }
+
+ 
+ 
