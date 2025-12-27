@@ -1,5 +1,9 @@
 import { posts } from './data.js';
 import { triggerGlitch } from './utils.js';
+import { marked } from 'marked';
+
+// Import all markdown files eagerly
+const postFiles = import.meta.glob('../../posts/*.md', { query: '?raw', import: 'default', eager: true });
 
 let lastScrollY = 0;
 const blogView = document.getElementById('blog-view');
@@ -40,9 +44,17 @@ function handleHashChange() {
         
         blogTitle.textContent = post.title;
         blogMeta.textContent = post.meta + ' | ' + post.tags.join(', ');
-        blogImage.src = 'https://via.placeholder.com/800x400/001018/00f0ff?text=' + encodeURIComponent(post.title); 
+        // blogImage.src = 'https://via.placeholder.com/800x400/001018/00f0ff?text=' + encodeURIComponent(post.title); 
+        blogImage.style.display = 'none';
         
-        if (post.body.length < 50 || post.body === '...' || post.body === '--') {
+        // Try to find the matching markdown file
+
+        const mdPath = `../../posts/${post.slug}.md`;
+        const mdContent = postFiles[mdPath];
+
+        if (mdContent) {
+            blogBody.innerHTML = marked.parse(mdContent);
+        } else if (post.body.length < 50 || post.body === '...' || post.body === '--') {
              blogBody.innerHTML = `
                 <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
                 <p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>

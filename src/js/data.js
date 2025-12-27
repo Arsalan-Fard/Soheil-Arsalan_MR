@@ -44,7 +44,7 @@ export const posts = [
         title: "Tutorial 01: Blog Setup",
         meta: "2025.12.18",
         body: "This section provides you quick tips about how this blog is created and deployed on github.",
-        tags: ["ThreeJS", "GitHub Pages"],
+        tags: ["Sass", "Vite", "GitHub Pages"],
         isTutorialRoute: true,
         slug: "tutorial-01"
     },
