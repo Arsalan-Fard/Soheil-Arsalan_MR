@@ -48,9 +48,9 @@
     width: min(88vw, 640px);
     transform: translate3d(calc(-50% + var(--x)), calc(-50% + var(--y)), var(--z)) rotateY(var(--rotateY, 0deg));
     transform-style: preserve-3d;
-    transition: opacity 0.3s ease, filter 0.3s ease;
+    transition: opacity 0.4s ease, transform 0.4s ease;
+    cursor: none;
     pointer-events: auto;
-    cursor: pointer;
 
     &.intersection-frame {
         width: min(75vw, 450px);
