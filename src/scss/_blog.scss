@@ -51,8 +51,10 @@
 }
 
 #back-button {
-    position: fixed;
+    position: sticky;
     top: 30px;
+    align-self: flex-start;
+    margin-left: 10px;
     left: 30px;
     background: transparent;
     border: 1px solid var(--glow);

@@ -39,10 +39,16 @@ function updateFrameVisibility(depth) {
     frames.forEach((frame) => {
         const z = parseFloat(frame.dataset.z);
         const distance = Math.abs(z + depth);
-        const fade = 1 - distance / 2800;
-        const opacity = clamp(fade, 0.05, 1);
+        
+        let fadeDist = 2800;
+        // if (frame.classList.contains('lab-assignments') || frame.classList.contains('Tutorial-assignments')) {
+        //     fadeDist = 3200;
+        // }
+
+        const fade = 1 - distance / fadeDist;
+        const opacity = clamp(fade, 0.15, 1);
         frame.style.opacity = opacity.toFixed(2);
-        frame.style.filter = `blur(${clamp((1 - opacity) * 3.5, 0, 3)}px)`;
+        // frame.style.filter = `blur(${clamp((1 - opacity) * 3.5, 0, 2)}px)`;
     });
 }
 
