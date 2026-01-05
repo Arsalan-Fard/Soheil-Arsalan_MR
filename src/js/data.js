@@ -67,10 +67,11 @@ export const posts = [
     {
         title: "Lecture 01: Three Locomotion Techniques",
         meta: "2025.12.08",
-        body: "...",
+        body: "This post presents three different locomotion techniques in VR.",
         tags: ["Presentation", "Locomotion", "MR"],
         isProjectRoute: true,
         slug: "lecture-01",
+        slides: "slides",
         image: "/images/blog_image.jpg"
     },
     {
