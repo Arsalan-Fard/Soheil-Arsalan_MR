@@ -1,5 +1,4 @@
 import { totalDepth, introDepth, posts } from './data.js';
-import { drawMinimap } from './map.js';
 import { clamp, easeOutCubic, typeWriter } from './utils.js';
 import { isBlogOpen } from './blog.js';
 
@@ -19,8 +18,6 @@ const hero = document.getElementById("hero");
 const scrollHint = document.getElementById("scroll-hint");
 const normalModeLink = document.getElementById("normal-mode-link");
 const introDim = document.getElementById("intro-dim");
-const minimap = document.getElementById("minimap");
-const ctx = minimap ? minimap.getContext("2d") : null;
 const cursorDot = document.getElementById("cursor-dot");
 const cursorRing = document.getElementById("cursor-ring");
 
@@ -149,7 +146,7 @@ function startIntro() {
     window.addEventListener('pointerdown', skip, { once: true });
 }
 
-export function initCamera(mapPoints, mapBounds) {
+export function initCamera() {
     const intersectionHint = document.getElementById("intersection-hint-3d");
     const typedText = document.getElementById("typed-text-3d");
 
@@ -170,11 +167,6 @@ export function initCamera(mapPoints, mapBounds) {
             document.body.classList.remove("hovering");
         }
     });
-
-    if (minimap) {
-        minimap.width = 400; 
-        minimap.height = 300;
-    }
 
     // Animation Loop
     function animate() {
@@ -208,8 +200,6 @@ export function initCamera(mapPoints, mapBounds) {
             if (t >= 1) {
                 finishIntro(false);
             }
-
-            drawMinimap(ctx, minimap, mapPoints, mapBounds, posts, currentZ, currentTranslateX, currentRotationY);
             requestAnimationFrame(animate);
             return;
         }
@@ -237,7 +227,6 @@ export function initCamera(mapPoints, mapBounds) {
             introDim.style.opacity = dimOpacity.toFixed(2);
         }
         
-        drawMinimap(ctx, minimap, mapPoints, mapBounds, posts, currentZ, currentTranslateX, currentRotationY);
         requestAnimationFrame(animate);
     }
 

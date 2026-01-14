@@ -20,7 +20,6 @@ const blogMeta = document.getElementById('blog-meta');
 const blogImage = document.getElementById('blog-image');
 const blogBody = document.getElementById('blog-body');
 const viewport = document.getElementById('viewport');
-const minimap = document.getElementById('minimap');
 
 export function initBlog() {
     window.addEventListener('hashchange', handleHashChange);
@@ -46,7 +45,6 @@ function handleHashChange() {
 
         blogView.classList.remove('hidden');
         viewport.style.opacity = '0';
-        if(minimap) minimap.style.display = 'none';
         document.body.style.overflow = 'hidden';
 
         blogTitle.textContent = post.title;
@@ -81,7 +79,6 @@ function handleHashChange() {
     } else {
         blogView.classList.add('hidden');
         viewport.style.opacity = '1';
-        if(minimap) minimap.style.display = 'block';
         document.body.style.overflow = '';
         blogContent.classList.remove('is-slideshow');
         

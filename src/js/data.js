@@ -48,7 +48,7 @@ export const posts = [
     {
         title: "Tutorial 01: Blog Setup",
         meta: "2025.12.18",
-        body: "This section provides you quick tips about how this blog is created and deployed on github.",
+        body: "Quick tips about how this blog is created and deployed on github.",
         tags: ["Sass", "Vite", "GitHub Pages"],
         isTutorialRoute: true,
         slug: "tutorial-01",
@@ -67,7 +67,7 @@ export const posts = [
     {
         title: "Lecture 01: Three Locomotion Techniques",
         meta: "2025.12.08",
-        body: "This post presents three different locomotion techniques in VR.",
+        body: "First presentation.",
         tags: ["Presentation", "Locomotion", "MR"],
         isProjectRoute: true,
         slug: "lecture-01",

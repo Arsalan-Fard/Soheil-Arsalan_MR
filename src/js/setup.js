@@ -1,14 +1,22 @@
-import { posts, spacing, scatterX, scatterY, totalDepth, introDepth } from './data.js';
+import { posts, totalDepth } from './data.js';
 
 export function initScene(setCameraTarget) {
     const postsEl = document.getElementById("posts");
     const voxelField = document.getElementById("voxel-field");
-    const mapPoints = [];
-    let mapBounds = { minX: 0, maxX: 0, minZ: -totalDepth, maxZ: introDepth };
 
-    let labCount = 0;
-    let TutorialCount = 0;
-    let projectCount = 0;
+    const globalLiftY = -250;
+    const mainTrackOffsetY = -70;
+    const intersectionPositions = {
+        projects: { x: 0, y: globalLiftY + mainTrackOffsetY, z: 0, rotateY: 0, mapX: 0, mapZ: 0 },
+        lab: { x: 450, y: globalLiftY, z: 200, rotateY: -45, mapX: 450, mapZ: 200 },
+        tutorial: { x: -450, y: globalLiftY, z: 200, rotateY: 45, mapX: -450, mapZ: 200 },
+    };
+
+    const labelToStackGapY = 160;
+    const stackSpacingY = 260;
+    let labStackIndex = 0;
+    let tutorialStackIndex = 0;
+    let projectStackIndex = 0;
 
     // Create Posts
     posts.forEach((post, index) => {
@@ -20,44 +28,34 @@ export function initScene(setCameraTarget) {
         let mapZ = 0; 
 
         if (index === 0) {
-            z = 0; x = 0; y = 0;
-            frame.classList.add("intersection-frame", "project-assignments");
-            mapZ = 0;
+            ({ x, y, z, rotateY, mapX, mapZ } = intersectionPositions.projects);
+            frame.classList.add("intersection-label", "project-assignments");
         } else if (index === 1) {
-            z = 200; x = 450; y = 0; rotateY = -45;
-            frame.classList.add("lab-assignments", "intersection-frame");
+            ({ x, y, z, rotateY } = intersectionPositions.lab);
+            frame.classList.add("intersection-label", "lab-assignments");
             mapX = 0; mapZ = 0;
         } else if (index === 2) {
-            z = 200; x = -450; y = 0; rotateY = 45;
-            frame.classList.add("Tutorial-assignments", "intersection-frame");
+            ({ x, y, z, rotateY } = intersectionPositions.tutorial);
+            frame.classList.add("intersection-label", "Tutorial-assignments");
             mapX = 0; mapZ = 0;
         } else if (post.isLabRoute) {
-            labCount++;
-            z = -labCount * spacing * Math.cos(Math.PI / 4);
-            x = 600 + labCount * spacing * Math.sin(Math.PI / 4);
-            y = 0; rotateY = -45;
+            labStackIndex += 1;
+            ({ x, z, rotateY, mapX, mapZ } = intersectionPositions.lab);
+            y = globalLiftY + labelToStackGapY + (labStackIndex - 1) * stackSpacingY;
+            frame.classList.add("stacked-frame");
             frame.classList.add("lab-assignments");
-            mapX = x; mapZ = z;
         } else if (post.isTutorialRoute) {
-            TutorialCount++;
-            z = -TutorialCount * spacing * Math.cos(Math.PI / 4);
-            x = -600 - TutorialCount * spacing * Math.sin(Math.PI / 4);
-            y = 0; rotateY = 45;
+            tutorialStackIndex += 1;
+            ({ x, z, rotateY, mapX, mapZ } = intersectionPositions.tutorial);
+            y = globalLiftY + labelToStackGapY + (tutorialStackIndex - 1) * stackSpacingY;
+            frame.classList.add("stacked-frame");
             frame.classList.add("Tutorial-assignments");
-            mapX = x; mapZ = z;
         } else {
-            projectCount++;
-            z = -projectCount * spacing;
-            x = (Math.random() * 2 - 1) * scatterX;
-            y = (Math.random() * 2 - 1) * scatterY;
-            mapX = 0; mapZ = z;
+            projectStackIndex += 1;
+            ({ x, z, rotateY, mapX, mapZ } = intersectionPositions.projects);
+            y = intersectionPositions.projects.y + labelToStackGapY + (projectStackIndex - 1) * stackSpacingY;
+            frame.classList.add("stacked-frame");
         }
-
-        mapPoints.push({ x: mapX, z: mapZ, type: (index <= 2) ? 'node' : 'post', originalIndex: index });
-
-        const absX = Math.abs(mapX);
-        mapBounds.maxX = Math.max(mapBounds.maxX, absX);
-        mapBounds.minZ = Math.min(mapBounds.minZ, mapZ);
 
         frame.style.setProperty("--x", `${x}px`);
         frame.style.setProperty("--y", `${y}px`);
@@ -67,18 +65,26 @@ export function initScene(setCameraTarget) {
 
         const isIntersectionFrame = index <= 2;
 
-        frame.innerHTML = `
+        if (isIntersectionFrame) {
+            frame.innerHTML = `
                 ${index === 0 ? `<div id="intersection-hint-3d"><span id="typed-text-3d"></span></div>` : ''}
+                <div class="frame-inner">
+                    <h2 class="frame-title">${post.title}</h2>
+                </div>
+            `;
+        } else {
+            frame.innerHTML = `
                 ${post.image ? `<img src="${post.image}" class="post-hover-image" alt="" />` : ''}
                 <div class="frame-inner">
                     <h2 class="frame-title">${post.title}</h2>
                     <div class="frame-meta">${post.meta}</div>
                     <p class="frame-body">${post.body}</p>
-                    ${!isIntersectionFrame ? `<div class="frame-tags">
+                    <div class="frame-tags">
                         ${post.tags.map((tag) => `<span class="frame-tag">${tag}</span>`).join("")}
-                    </div>` : ''}
+                    </div>
                 </div>
             `;
+        }
 
         if (post.isProjects) {
             frame.addEventListener("click", () => setCameraTarget(0, 0));
@@ -102,11 +108,6 @@ export function initScene(setCameraTarget) {
         postsEl.appendChild(frame);
     });
 
-    const mainTrackPoints = mapPoints.filter((point) => point.x === 0);
-    if (mainTrackPoints.length > 0) {
-        mapBounds.minZ = Math.min(...mainTrackPoints.map((point) => point.z));
-    }
-
     // Create Voxels
     for (let i = 0; i < 160; i += 1) {
         const voxel = document.createElement("span");
@@ -118,6 +119,4 @@ export function initScene(setCameraTarget) {
         voxel.style.animationDelay = `${Math.random() * 2}s`;
         voxelField.appendChild(voxel);
     }
-
-    return { mapPoints, mapBounds };
 }
