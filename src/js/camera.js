@@ -1,4 +1,4 @@
-import { totalDepth, introDepth, posts } from './data.js';
+import { introDepth, maxForwardDepth, posts, totalDepth } from './data.js';
 import { clamp, easeOutCubic, typeWriter } from './utils.js';
 import { isBlogOpen } from './blog.js';
 
@@ -56,7 +56,15 @@ function onScroll() {
 
     const maxScroll = document.body.scrollHeight - window.innerHeight;
     scrollProgress = maxScroll > 0 ? window.scrollY / maxScroll : 0;
-    targetZ = scrollProgress * (totalDepth + introDepth) - introDepth;
+
+    const introPortion = introDepth / (introDepth + totalDepth);
+    if (scrollProgress <= introPortion) {
+        const t = introPortion > 0 ? scrollProgress / introPortion : 1;
+        targetZ = -introDepth + t * introDepth;
+    } else {
+        const t = (scrollProgress - introPortion) / (1 - introPortion);
+        targetZ = t * maxForwardDepth;
+    }
 }
 
 function onPointerMove(event) {

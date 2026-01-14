@@ -123,3 +123,6 @@ const maxTrackDepth = Math.max(
 
 export const totalDepth = maxTrackDepth;
 export const introDepth = 5400;
+
+// Camera forward limit (prevents scrolling far past the content).
+export const maxForwardDepth = 650;
