@@ -29,21 +29,21 @@ export const posts = [
     
     {
         title: "Lab 01: Roll a Ball",
-        meta: "2025.12.25",
-        body: "--",
-        tags: ["--"],
+        meta: "2026.01.06",
+        body: "A ball in Telecom Paris!",
+        tags: ["Unity", "C#"],
         isLabRoute: true,
         slug: "lab-01",
-        image: "/unity_setup/1.png"
+        image: "images/1.png"
     },
     {
         title: "Lab 02: The VR Ball",
-        meta: "2025.12.25",
-        body: "--",
-        tags: ["--"],
+        meta: "2026.01.14",
+        body: "How to run the ball project in VR.",
+        tags: ["Unity", "C#", "VR"],
         isLabRoute: true,
         slug: "lab-02",
-        image: "/unity_setup/2.png"
+        image: "images/3.png"
     },
     {
         title: "Tutorial 01: Blog Setup",
@@ -68,29 +68,29 @@ export const posts = [
         title: "Lecture 01: Three Locomotion Techniques",
         meta: "2025.12.08",
         body: "First presentation.",
-        tags: ["Presentation", "Locomotion", "MR"],
+        tags: ["Presentation", "Locomotion", "VR"],
         isProjectRoute: true,
         slug: "lecture-01",
         slides: "slides",
-        image: "/images/blog_image.jpg"
+        image: "images/4.png"
     },
     {
-        title: "Lecture 02: Proposing our Locomotion Technique",
-        meta: "-",
-        body: "...",
-        tags: ["Presentation", "Locomotion", "MR"],
+        title: "Lecture 02: Our Locomotion Technique",
+        meta: "2026.01.20",
+        body: "Second Presentation.",
+        tags: ["Presentation", "Locomotion", "VR"],
         isProjectRoute: true,
         slug: "lecture-02",
-        image: "/images/unity_setup_image.jpg"
+        image: "images/5.jpg"
     },
     {
         title: "Project 01: ...",
-        meta: "-",
+        meta: "2026.02.04",
         body: "...",
-        tags: ["Presentation", "Locomotion", "MR"],
+        tags: ["Locomotion", "MR"],
         isProjectRoute: true,
         slug: "project-01",
-        image: "/images/VR_fail_image.jpg"
+        image:  "images/5.jpg"
     },
 
 ];
