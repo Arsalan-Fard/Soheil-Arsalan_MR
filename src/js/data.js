@@ -91,7 +91,8 @@ export const posts = [
         tags: ["Project", "Locomotion", "MR"],
         isProjectRoute: true,
         slug: "project-03",
-        image:  "images/5.jpg"
+        slides: "3",
+        image:  "images/6.png"
     },
 
 ];

@@ -2,7 +2,7 @@ import { posts } from './data.js';
 import { marked } from 'marked';
 
 const postFiles = import.meta.glob('../../posts/*.md', { query: '?raw', import: 'default', eager: true });
-const slideFiles = import.meta.glob('../../slides/*/*.{jpg,jpeg,png,webp}', { query: '?url', import: 'default', eager: true });
+const slideFiles = import.meta.glob('../../slides/*/*.{jpg,jpeg,png,webp,gif}', { query: '?url', import: 'default', eager: true });
 const slidesByDeck = Object.entries(slideFiles).reduce((acc, [path, url]) => {
     const segments = path.split('/');
     const folder = segments[segments.length - 2];

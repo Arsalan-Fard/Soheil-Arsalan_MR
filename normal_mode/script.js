@@ -82,7 +82,7 @@ function renderMarkdown(markdown, options = {}) {
   return html;
 }
 
-const slideFiles = import.meta.glob("../slides/*/*.{jpg,jpeg,png,webp}", {
+const slideFiles = import.meta.glob("../slides/*/*.{jpg,jpeg,png,webp,gif}", {
   query: "?url",
   import: "default",
   eager: true,
