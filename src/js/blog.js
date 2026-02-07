@@ -2,10 +2,21 @@ import { posts } from './data.js';
 import { marked } from 'marked';
 
 const postFiles = import.meta.glob('../../posts/*.md', { query: '?raw', import: 'default', eager: true });
-const slideFiles = import.meta.glob('../../slides/*.{jpg,jpeg,png,webp}', { query: '?url', import: 'default', eager: true });
-const allSlides = Object.entries(slideFiles)
-    .sort(([a], [b]) => a.localeCompare(b))
-    .map(([path, url]) => url);
+const slideFiles = import.meta.glob('../../slides/*/*.{jpg,jpeg,png,webp}', { query: '?url', import: 'default', eager: true });
+const slidesByDeck = Object.entries(slideFiles).reduce((acc, [path, url]) => {
+    const segments = path.split('/');
+    const folder = segments[segments.length - 2];
+    if (!folder) return acc;
+    if (!acc[folder]) acc[folder] = [];
+    acc[folder].push([path, url]);
+    return acc;
+}, {});
+
+Object.keys(slidesByDeck).forEach((folder) => {
+    slidesByDeck[folder] = slidesByDeck[folder]
+        .sort(([a], [b]) => a.localeCompare(b))
+        .map(([, url]) => url);
+});
 
 let lastScrollY = 0;
 const blogView = document.getElementById('blog-view');
@@ -54,10 +65,12 @@ function handleHashChange() {
     blogMeta.textContent = post.meta + ' | ' + post.tags.join(', ');
     blogContent.classList.remove('is-slideshow');
 
-    if (post.slides && allSlides.length > 0) {
+    const slideUrls = post.slides ? (slidesByDeck[post.slides] || []) : [];
+
+    if (slideUrls.length > 0) {
         blogContent.classList.add('is-slideshow');
         tableOfContents.classList.add('hidden');
-        showSlideshow(allSlides, post.title);
+        showSlideshow(slideUrls, post.title);
         return;
     }
 

@@ -1,6 +1,6 @@
 export const posts = [
     {
-        title: "Lecture and Project",
+        title: "Presentations and Project",
         meta: "Main Track",
         body: "The project subject is Locomotion. You can see presentations, demos and final project in this path.",
         tags: ["projects", "main"],
@@ -65,31 +65,32 @@ export const posts = [
     },
     
     {
-        title: "Lecture 01: Three Locomotion Techniques",
+        title: "Presentation 01: Three Locomotion Techniques",
         meta: "2025.12.08",
         body: "First presentation.",
         tags: ["Presentation", "Locomotion", "VR"],
         isProjectRoute: true,
-        slug: "lecture-01",
-        slides: "slides",
+        slug: "project-01",
+        slides: "1",
         image: "images/4.png"
     },
     {
-        title: "Lecture 02: Our Locomotion Technique",
+        title: "Presentation 02: Our Locomotion Technique",
         meta: "2026.01.20",
         body: "Second Presentation.",
         tags: ["Presentation", "Locomotion", "VR"],
         isProjectRoute: true,
-        slug: "lecture-02",
+        slug: "project-02",
+        slides: "2",
         image: "images/5.jpg"
     },
     {
-        title: "Project 01: ...",
+        title: "Final Presentation: Magic Broom",
         meta: "2026.02.04",
-        body: "...",
-        tags: ["Locomotion", "MR"],
+        body: "Final presentation",
+        tags: ["Project", "Locomotion", "MR"],
         isProjectRoute: true,
-        slug: "project-01",
+        slug: "project-03",
         image:  "images/5.jpg"
     },
 

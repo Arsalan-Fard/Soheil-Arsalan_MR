@@ -1,4 +1,5 @@
 import { marked } from "marked";
+import { posts as locomotionPosts } from "../src/js/data.js";
 
 const postFiles = import.meta.glob("../posts/*.md", {
   query: "?raw",
@@ -6,22 +7,28 @@ const postFiles = import.meta.glob("../posts/*.md", {
   eager: true,
 });
 
-const posts = Object.entries(postFiles).map(([mdPath, content]) => {
-  const id = mdPath.match(/\/(\w+-\w+)\.md$/)[1];
-  let category = "Uncategorized";
-  if (id.startsWith("tutorial")) category = "Tutorials";
-  else if (id.startsWith("lab")) category = "Labs";
-  else if (id.startsWith("lecture")) category = "Lectures";
-  else if (id.startsWith("project")) category = "Projects";
-  return { id, mdPath, category };
-});
+const posts = locomotionPosts
+  .filter((post) => post.isLabRoute || post.isTutorialRoute || post.isProjectRoute)
+  .map((post) => {
+    let category = "Uncategorized";
+    if (post.isTutorialRoute) category = "Tutorials";
+    else if (post.isLabRoute) category = "Labs";
+    else if (post.isProjectRoute) category = "Projects";
+
+    return {
+      id: post.slug,
+      mdPath: `../posts/${post.slug}.md`,
+      category,
+      title: post.title,
+      body: post.body,
+      image: post.image ? `../${post.image}` : null,
+      slides: post.slides || null,
+    };
+  });
 
 function getMarkdown(mdPath) {
   const content = postFiles[mdPath];
-  if (!content) {
-    throw new Error(`Missing markdown file: ${mdPath}`);
-  }
-  return content;
+  return content || null;
 }
 
 function extractTitle(markdown, fallback) {
@@ -63,14 +70,25 @@ function renderMarkdown(markdown, options = {}) {
   return html;
 }
 
-const slideFiles = import.meta.glob("../slides/*.{jpg,jpeg,png,webp}", {
+const slideFiles = import.meta.glob("../slides/*/*.{jpg,jpeg,png,webp}", {
   query: "?url",
   import: "default",
   eager: true,
 });
-const allSlides = Object.entries(slideFiles)
-  .sort(([a], [b]) => a.localeCompare(b))
-  .map(([path, url]) => url);
+const slidesByDeck = Object.entries(slideFiles).reduce((acc, [path, url]) => {
+  const segments = path.split("/");
+  const folder = segments[segments.length - 2];
+  if (!folder) return acc;
+  if (!acc[folder]) acc[folder] = [];
+  acc[folder].push([path, url]);
+  return acc;
+}, {});
+
+Object.keys(slidesByDeck).forEach((folder) => {
+  slidesByDeck[folder] = slidesByDeck[folder]
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([, url]) => url);
+});
 
 function showSlideshow(container, slideUrls, title) {
   if (slideUrls.length === 0) {
@@ -109,8 +127,8 @@ function renderCards(container) {
 
   for (const post of posts) {
     const markdown = getMarkdown(post.mdPath);
-    const title = extractTitle(markdown, post.id);
-    const firstImage = extractFirstImage(markdown);
+    const title = post.title || extractTitle(markdown || "", post.id);
+    const firstImage = post.image || (markdown ? extractFirstImage(markdown) : null);
 
     const article = document.createElement("article");
     article.className = "project-card";
@@ -161,17 +179,15 @@ function showProjectDetails(postId) {
   if (!post) return;
 
   const markdown = getMarkdown(post.mdPath);
-  const title = extractTitle(markdown, post.id);
+  const title = post.title || extractTitle(markdown || "", post.id);
+  const slideUrls = post.slides ? slidesByDeck[post.slides] || [] : [];
 
-  // Check if the post is a slideshow
-  const isSlideshow = markdown.includes("/slides/");
-
-  if (isSlideshow) {
+  if (slideUrls.length > 0) {
     detailTitle.textContent = title;
     detailImage.classList.add("hidden");
-    showSlideshow(detailContent, allSlides, title);
+    showSlideshow(detailContent, slideUrls, title);
   } else {
-    const firstImage = extractFirstImage(markdown);
+    const firstImage = markdown ? extractFirstImage(markdown) : post.image;
     detailTitle.textContent = title;
 
     if (firstImage) {
@@ -181,9 +197,13 @@ function showProjectDetails(postId) {
       detailImage.src = "";
       detailImage.classList.add("hidden");
     }
-    detailContent.innerHTML = renderMarkdown(markdown, {
-      rewriteImagePaths: true,
-    });
+    if (markdown) {
+      detailContent.innerHTML = renderMarkdown(markdown, {
+        rewriteImagePaths: true,
+      });
+    } else {
+      detailContent.innerHTML = `<p>${post.body || "No content available yet."}</p>`;
+    }
   }
 
   gallery.classList.add("hidden");
