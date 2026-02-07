@@ -7,15 +7,23 @@ const postFiles = import.meta.glob("../posts/*.md", {
   eager: true,
 });
 
+const categoryOrder = {
+  Tutorials: 0,
+  Labs: 1,
+  Projects: 2,
+  Uncategorized: 3,
+};
+
 const posts = locomotionPosts
   .filter((post) => post.isLabRoute || post.isTutorialRoute || post.isProjectRoute)
-  .map((post) => {
+  .map((post, index) => {
     let category = "Uncategorized";
     if (post.isTutorialRoute) category = "Tutorials";
     else if (post.isLabRoute) category = "Labs";
     else if (post.isProjectRoute) category = "Projects";
 
     return {
+      orderIndex: index,
       id: post.slug,
       mdPath: `../posts/${post.slug}.md`,
       category,
@@ -24,6 +32,10 @@ const posts = locomotionPosts
       image: post.image ? `../${post.image}` : null,
       slides: post.slides || null,
     };
+  })
+  .sort((a, b) => {
+    const categoryDiff = (categoryOrder[a.category] ?? 99) - (categoryOrder[b.category] ?? 99);
+    return categoryDiff !== 0 ? categoryDiff : a.orderIndex - b.orderIndex;
   });
 
 function getMarkdown(mdPath) {
@@ -187,16 +199,9 @@ function showProjectDetails(postId) {
     detailImage.classList.add("hidden");
     showSlideshow(detailContent, slideUrls, title);
   } else {
-    const firstImage = markdown ? extractFirstImage(markdown) : post.image;
     detailTitle.textContent = title;
-
-    if (firstImage) {
-      detailImage.src = firstImage;
-      detailImage.classList.remove("hidden");
-    } else {
-      detailImage.src = "";
-      detailImage.classList.add("hidden");
-    }
+    detailImage.src = "";
+    detailImage.classList.add("hidden");
     if (markdown) {
       detailContent.innerHTML = renderMarkdown(markdown, {
         rewriteImagePaths: true,
@@ -223,6 +228,22 @@ function showGallery() {
   window.scrollTo(0, 0);
 }
 
+function getPostIdFromHash() {
+  const hash = window.location.hash.replace(/^#/, "");
+  if (!hash) return null;
+  const postId = decodeURIComponent(hash);
+  return posts.some((post) => post.id === postId) ? postId : null;
+}
+
+function applyRouteFromUrl() {
+  const postId = getPostIdFromHash();
+  if (postId) {
+    showProjectDetails(postId);
+  } else {
+    showGallery();
+  }
+}
+
 function initFiltering() {
   const buttons = Array.from(document.querySelectorAll(".filter-btn"));
   const cards = Array.from(document.querySelectorAll(".project-card"));
@@ -238,12 +259,29 @@ function initFiltering() {
 
 function initNavigation() {
   const backButton = document.getElementById("back-btn");
-  if (backButton) backButton.addEventListener("click", showGallery);
+  if (backButton) {
+    backButton.addEventListener("click", () => {
+      if (window.location.hash) {
+        history.back();
+      } else {
+        showGallery();
+      }
+    });
+  }
 
   const cards = Array.from(document.querySelectorAll(".project-card"));
   cards.forEach((card) => {
-    card.addEventListener("click", () => showProjectDetails(card.dataset.id));
+    card.addEventListener("click", () => {
+      const nextHash = `#${encodeURIComponent(card.dataset.id)}`;
+      if (window.location.hash !== nextHash) {
+        window.location.hash = nextHash;
+      } else {
+        showProjectDetails(card.dataset.id);
+      }
+    });
   });
+
+  window.addEventListener("hashchange", applyRouteFromUrl);
 }
 
 function initThemeToggle() {
@@ -275,4 +313,5 @@ document.addEventListener("DOMContentLoaded", () => {
   initFiltering();
   initNavigation();
   initThemeToggle();
+  applyRouteFromUrl();
 });
