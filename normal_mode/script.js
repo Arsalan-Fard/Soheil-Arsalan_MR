@@ -102,25 +102,42 @@ Object.keys(slidesByDeck).forEach((folder) => {
     .map(([, url]) => url);
 });
 
-function showSlideshow(container, slideUrls, title) {
+const slideNotesByDeck = {
+  "3": {
+    2: "The right controller is attached to the tip of the physical stick. Its forward vector defines our virtual forward direction with one caveat: at the beginning of the game, the right controller can look anywhere. We calculate the angle between actual forward and where it looks, then use that offset for our forward direction.",
+    3: "While our work is very similar to this paper, we are mostly focused on smooth experience rather than answering specific research questions about leaning.",
+    4: "The acceleration happens when the user leans. In other words, the distance between head and right controller is calculated. To encourage users to reach for the tip of the broom, extra speed is possible. We also map physical and virtual sticks by using two controllers at the beginning of the game (left controller is free after that).",
+    5: "Since we are using the controller's forward axis, we can use that for vertical steering. The left controller is used for creating portals that bring us back to another point.",
+    8: "Our study had 7 participants. Their demography is provided as follows.",
+  },
+};
+
+function showSlideshow(container, slideUrls, title, deckId) {
   if (slideUrls.length === 0) {
     container.innerHTML = "<p>No slides available.</p>";
     return;
   }
 
+  const notesBySlide = slideNotesByDeck[deckId] || {};
+
   container.innerHTML = `
         <div class="slideshow">
             <button class="slide-nav slide-prev">&larr;</button>
-            <img class="slide-image" src="${slideUrls[0]}" alt="${title} slide 1">
+            <div class="slide-frame">
+              <img class="slide-image" src="${slideUrls[0]}" alt="${title} slide 1">
+              <div class="slide-counter">1 / ${slideUrls.length}</div>
+            </div>
+            <aside class="slide-note hidden" aria-live="polite"></aside>
             <button class="slide-nav slide-next">&rarr;</button>
-            <div class="slide-counter">1 / ${slideUrls.length}</div>
         </div>
     `;
 
+  const slideshow = container.querySelector(".slideshow");
   const prevBtn = container.querySelector(".slide-prev");
   const nextBtn = container.querySelector(".slide-next");
   const img = container.querySelector(".slide-image");
   const counter = container.querySelector(".slide-counter");
+  const notePanel = container.querySelector(".slide-note");
   let currentSlide = 0;
 
   function goToSlide(newIndex) {
@@ -128,10 +145,23 @@ function showSlideshow(container, slideUrls, title) {
     img.src = slideUrls[currentSlide];
     img.alt = `${title} slide ${currentSlide + 1}`;
     counter.textContent = `${currentSlide + 1} / ${slideUrls.length}`;
+
+    const note = notesBySlide[currentSlide + 1];
+    if (note) {
+      notePanel.textContent = note;
+      notePanel.classList.remove("hidden");
+      slideshow.classList.add("has-note");
+      return;
+    }
+
+    notePanel.textContent = "";
+    notePanel.classList.add("hidden");
+    slideshow.classList.remove("has-note");
   }
 
   prevBtn.addEventListener("click", () => goToSlide(currentSlide - 1));
   nextBtn.addEventListener("click", () => goToSlide(currentSlide + 1));
+  goToSlide(0);
 }
 
 function renderCards(container) {
@@ -197,7 +227,7 @@ function showProjectDetails(postId) {
   if (slideUrls.length > 0) {
     detailTitle.textContent = title;
     detailImage.classList.add("hidden");
-    showSlideshow(detailContent, slideUrls, title);
+    showSlideshow(detailContent, slideUrls, title, post.slides);
   } else {
     detailTitle.textContent = title;
     detailImage.src = "";
