@@ -34,7 +34,8 @@ export const posts = [
         tags: ["Unity", "C#"],
         isLabRoute: true,
         slug: "lab-01",
-        image: "images/1.png"
+        image: "images/1.png",
+        link: "https://github.com/soheil1lotfi/Soheil-Arsalan-MixedReality-Projects/tree/main/rollaball-normal"
     },
     {
         title: "Lab 02: The VR Ball",
@@ -43,7 +44,8 @@ export const posts = [
         tags: ["Unity", "C#", "VR"],
         isLabRoute: true,
         slug: "lab-02",
-        image: "images/3.png"
+        image: "images/3.png",
+        link: "https://github.com/soheil1lotfi/Soheil-Arsalan-MixedReality-Projects/tree/main/Rollaballvr-selection"
     },
     {
         title: "Tutorial 01: Blog Setup",
@@ -92,7 +94,8 @@ export const posts = [
         isProjectRoute: true,
         slug: "project-03",
         slides: "3",
-        image:  "images/6.png"
+        image:  "images/6.png",
+        link: "https://github.com/soheil1lotfi/Soheil-Arsalan-MixedReality-Projects/tree/main/VR-locomotion-Soheil-Arsalan"
     },
 
 ];

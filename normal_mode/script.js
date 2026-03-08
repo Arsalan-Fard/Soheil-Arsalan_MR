@@ -31,6 +31,7 @@ const posts = locomotionPosts
       body: post.body,
       image: post.image ? `../${post.image}` : null,
       slides: post.slides || null,
+      link: post.link || null,
     };
   })
   .sort((a, b) => {
@@ -214,11 +215,21 @@ function showProjectDetails(postId) {
   const filterNav = document.querySelector(".filter-nav");
   const detailView = document.getElementById("project-detail");
   const detailTitle = document.getElementById("detail-title");
+  const detailLinkContainer = document.getElementById("detail-link-container");
   const detailImage = document.getElementById("detail-image");
   const detailContent = document.getElementById("detail-content");
 
   const post = posts.find((p) => p.id === postId);
   if (!post) return;
+
+  detailLinkContainer.innerHTML = ''; // Clear previous link
+  if (post.link) {
+      const linkElement = document.createElement('a');
+      linkElement.href = post.link;
+      linkElement.textContent = 'GitHub Repository';
+      linkElement.target = '_blank';
+      detailLinkContainer.appendChild(linkElement);
+  }
 
   const markdown = getMarkdown(post.mdPath);
   const title = post.title || extractTitle(markdown || "", post.id);

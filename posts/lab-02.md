@@ -1,87 +1,202 @@
-This part covers the tools and settings to build and run a Roll-a-Ball game on a Meta Quest headset. The goal is simple: get a working `.apk` running on the device before we touch gameplay code.
+In this section we adapt the "Roll a Ball" game from Lab 01 into a fully playable VR experience on the Meta Quest headset, based on the lab assignment "VR Selection."
 
-# Installing the required apps
+<video width="100%" controls autoplay loop muted playsinline>
+  <source src="vrball/gameplay.mp4" type="video/mp4">
+</video>
 
-## A) Meta Horizon app (mobile)
+The theme remains "Telecom Paris master student." The player still controls a ball and collects 12 courses, each worth 5 ECTS, within 365 seconds. However, instead of hourglasses, a 3D model of our professor — generated with AI — now chases the player as the deadline agent. The player can fight back by grabbing and throwing objects at the agents, which triggers a custom dissolve shader effect. There is still a health bar in the canteen that gives the player one extra chance to get hit by deadlines.
 
-Install Meta Horizon on your phone. Pair the phone with the headset and then enable Developer Mode.
+Below are the implemented features and how they differ from Lab 01.
 
-## B) Meta Quest Developer Hub (MQDH) (desktop)
+## 1. VR Ball Movement
 
-Install Meta Quest Developer Hub on your PC. Enable USB debugging so you can install/uninstall `.apk` builds quickly.
+In Lab 01 the ball was controlled with keyboard (WASD) and mouse. In VR, movement is driven by the left controller joystick. The direction is relative to where the VR headset is looking, so the player moves forward in the direction they face.
 
-Sign in with the same Meta account used on the headset. Then connect the headset via USB and accept the USB Debugging prompt inside the headset.
+```csharp
+void FixedUpdate()
+{
+    var leftHand = UnityEngine.XR.InputDevices.GetDeviceAtXRNode(UnityEngine.XR.XRNode.LeftHand);
+    leftHand.TryGetFeatureValue(UnityEngine.XR.CommonUsages.primary2DAxis, out Vector2 joystickInput);
 
-# Turn on Developer Mode for the headset
+    if (joystickInput.sqrMagnitude > 0.01f)
+    {
+        Vector3 forward = cameraTransform.forward;
+        Vector3 right = cameraTransform.right;
+        forward.y = 0;
+        right.y = 0;
+        forward.Normalize();
+        right.Normalize();
 
-To build and run apps, the headset must be in Developer Mode. Create a Meta Developer account (Meta Developer Dashboard). In the Meta Horizon mobile app go to Menu → Devices → Developer Mode and toggle Developer Mode On.
+        Vector3 moveDirection = (forward * joystickInput.y + right * joystickInput.x);
+        rb.AddForce(moveDirection * moveSpeed, ForceMode.Force);
+    }
+}
+```
 
-# Set up Android build support in Unity
+Turning is handled by the right controller joystick with smooth rotation. The rotation happens around the camera position so that it feels natural in VR.
 
-To build a Quest `.apk`, Unity must have Android modules installed.
+```csharp
+void Update()
+{
+    var rightHand = UnityEngine.XR.InputDevices.GetDeviceAtXRNode(UnityEngine.XR.XRNode.RightHand);
+    rightHand.TryGetFeatureValue(UnityEngine.XR.CommonUsages.primary2DAxis, out Vector2 joystick);
 
-In Unity Hub, find the Unity version you are using and install Android Build Support, Android SDK & NDK Tools, and OpenJDK.
+    if (Mathf.Abs(joystick.x) > 0.2f)
+    {
+        transform.RotateAround(Camera.main.transform.position, Vector3.up, joystick.x * turnSpeed * Time.deltaTime);
+    }
+}
+```
 
-# Unity project settings for Quest VR
+Since the camera in VR is the headset itself (XR Origin), a `VRFollowPlayer` script keeps the XR rig anchored to the ball's position so the player always sees the game from behind the ball.
 
-## A) Switch platform to Android (or Meta Quest)
+## 2. Environment Design
 
-In the Unity project go to File → Build Settings and select Android (or Meta Quest), then click Switch Platform.
+The environment is the same Telecom Paris campus from Lab 01, with adjustments for VR scale and comfort. The XR Interaction Toolkit Starter Assets are used to set up the XR Origin and controller input bindings.
 
-## B) Set texture compression
+## 3. AI Agents (Professor 3D Model)
 
-Set Texture Compression to ASTC (recommended for Quest).
+Instead of the hourglasses from Lab 01, we use a 3D-scanned model of our course professor as the deadline agent. The model was generated with AI and imported as a Unity package. Like the hourglasses, the agents use NavMesh to follow the player.
 
-## C) Enable XR for Quest (OpenXR)
+![3D Professor Model](vrball/daniel.png "3D Professor Model as AI Agent")
 
-Go to Edit → Project Settings → XR Plug-in Management. Under Android, enable OpenXR.
+The AI follower script uses NavMesh with a follow distance threshold so the agent stops when close enough to the player.
 
-Then go to Project Settings → XR Plug-in Management → OpenXR.
+```csharp
+void Update()
+{
+    float distance = Vector3.Distance(transform.position, player.position);
 
-Recommended settings:
-- Enable Meta Quest support / Oculus profile (depends on Unity version).
-- Stereo Rendering Mode: Multiview (good performance on Quest).
-- Enable the relevant OpenXR interaction profiles (Meta/Oculus controller profile).
+    if (distance > followDistance)
+    {
+        agent.SetDestination(player.position);
+    }
+    else
+    {
+        agent.ResetPath();
+    }
+}
+```
 
-If you use XR Interaction Toolkit, it typically expects OpenXR + the Input System.
+## 4. Custom Dissolve Shader
 
-# Player settings (Android)
+When an agent is killed, it dissolves away using a custom Shader Graph. The shader takes a noise texture and uses the `DissolveAmount` property (0 to 1) to progressively cut away pixels. An edge color (glow) highlights the dissolve boundary.
 
-Go to Edit → Project Settings → Player → Android.
+![Dissolve Shader Graph](vrball/shader.png "Dissolve Shader Graph")
 
-Recommended settings:
-- Scripting Backend: IL2CPP
-- Target Architectures: ARM64 (Quest requires 64-bit)
-- Minimum API Level: choose a Quest-compatible Android version (use Unity/Meta recommendations)
-- Active Input Handling: Input System Package (or Both if you still use the old input)
-- Color Space: Linear (recommended for modern lighting; keep consistent with your pipeline)
-- Graphics API: Vulkan (or OpenGLES3 depending on your project and render pipeline)
+The shader exposes the following properties: EdgeColor, EdgeWidth, NoiseScale, BaseMap, BaseColor, MetallicMap, Smoothness, NormalMap, NormalScale, and DissolveAmount. In the `DeadlineMovement` script, when `Die()` is called, the dissolve amount is animated from 0 to 1 over time:
 
-Optional but useful:
-- Package Name (e.g., `com.yourname.rollaballvr`)
-- Company Name / Product Name
-- App icon (makes it easier to find on the headset)
+```csharp
+public void Die()
+{
+    if (isDying) return;
+    isDying = true;
+    navMeshAgent.isStopped = true;
+}
 
-# Add the correct scene(s) to Build Settings
+void Update()
+{
+    if (isDying)
+    {
+        dissolveAmount += Time.deltaTime * dissolveSpeed;
+        material.SetFloat("_DissolveAmount", dissolveAmount);
 
-Even if the Scene view looks correct in the editor, the device build will show an empty world if your intended scene is not included in the build.
+        if (dissolveAmount >= 1f)
+        {
+            Destroy(gameObject);
+        }
+        return;
+    }
 
-Go to File → Build Settings.
+    if (player != null && navMeshAgent.isOnNavMesh)
+    {
+        navMeshAgent.SetDestination(player.position);
+    }
+}
+```
 
-Make sure:
-- Your VR scene (e.g., `MiniGame.unity`) is checked and listed.
-- It is placed at the top if it should be the first scene loaded.
+## 5. Grab and Throw Mechanic
 
-This is one of the most common “works in editor, empty in headset” causes.
+This is a new VR-exclusive feature. The player uses the right controller to aim a laser pointer at throwable objects. Pulling the trigger grabs the object; releasing it throws it using the controller's velocity. When a thrown object hits an agent tagged "Enemy," it triggers the dissolve death.
 
-# Build and run on the headset
+```csharp
+void TryGrab()
+{
+    Ray ray = new Ray(transform.position, transform.forward);
+    if (Physics.Raycast(ray, out RaycastHit hit, grabRange, throwableLayer))
+    {
+        if (hit.collider.CompareTag("Throwable"))
+        {
+            heldObject = hit.collider.gameObject;
+            heldRb = heldObject.GetComponent<Rigidbody>();
+            heldRb.isKinematic = true;
+            heldRb.useGravity = false;
+        }
+    }
+}
 
-From Unity:
-- Go to File → Build Settings.
-- Ensure the headset is connected and recognized.
-- Click Build And Run.
+void ThrowObject()
+{
+    heldRb.isKinematic = false;
+    heldRb.useGravity = true;
+    heldRb.linearVelocity = controllerVelocity * throwForceMultiplier;
 
-If the app installs but you see a blank scene:
-- Confirm the correct scene order in Build Settings.
-- Confirm the scene contains an XR Origin / XR Rig and an XR-compatible camera setup.
-- Check logs in MQDH (crashes or missing shaders show up quickly).
+    heldObject = null;
+    heldRb = null;
+}
+```
+
+The projectile script detects the collision and calls `Die()` on the agent:
+
+```csharp
+void OnCollisionEnter(Collision collision)
+{
+    if (collision.collider.CompareTag("Enemy"))
+    {
+        DeadlineMovement enemy = collision.collider.GetComponentInParent<DeadlineMovement>();
+        if (enemy != null)
+        {
+            enemy.Die();
+        }
+        Destroy(gameObject);
+    }
+}
+```
+
+## 6. Deadline Health Bar
+
+Each deadline agent now has a visible health bar above its head that shrinks over its 60-second lifetime. This gives the player a visual indicator of how much time is left before the agent despawns on its own.
+
+```csharp
+void Update()
+{
+    t += Time.deltaTime / duration;
+    float x = Mathf.Lerp(startScale.x, 0f, t);
+    transform.localScale = new Vector3(x, startScale.y, startScale.z);
+}
+```
+
+## 7. Deadlines Appearance and Perish
+
+Just like Lab 01, when the player collects an ECTS course, a linked deadline agent is activated. The collectible triggers `ActivateEnemy()` and then destroys itself. Each agent has a 60-second lifetime after which it is automatically destroyed with a particle effect.
+
+```csharp
+void ActivateEnemy()
+{
+    if (linkedEnemy != null)
+    {
+        if (linkedEnemy.transform.IsChildOf(transform))
+        {
+            linkedEnemy.transform.SetParent(null, true);
+        }
+
+        linkedEnemy.SetActive(true);
+    }
+
+    Destroy(gameObject);
+}
+```
+
+## 8. Player Health and Win Mechanism
+
+The health system and win condition remain identical to Lab 01. The player starts with 1 health, can gain extra health from the canteen, and loses health when hit by a deadline agent. Collecting 60 ECTS triggers graduation. The 365-second countdown still applies.

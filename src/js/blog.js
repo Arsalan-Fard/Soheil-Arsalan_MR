@@ -34,6 +34,7 @@ const backButton = document.getElementById('back-button');
 const blogContent = document.querySelector('.blog-content');
 const blogTitle = document.getElementById('blog-title');
 const blogMeta = document.getElementById('blog-meta');
+const blogLinkContainer = document.getElementById('blog-link-container');
 const blogBody = document.getElementById('blog-body');
 const viewport = document.getElementById('viewport');
 const tableOfContents = document.getElementById('table-of-contents');
@@ -73,6 +74,16 @@ function handleHashChange() {
 
     blogTitle.textContent = post.title;
     blogMeta.textContent = post.meta + ' | ' + post.tags.join(', ');
+    blogLinkContainer.innerHTML = ''; // Clear previous link
+
+    if (post.link) {
+        const linkElement = document.createElement('a');
+        linkElement.href = post.link;
+        linkElement.textContent = 'GitHub Repository';
+        linkElement.target = '_blank';
+        blogLinkContainer.appendChild(linkElement);
+    }
+    
     blogContent.classList.remove('is-slideshow');
 
     const slideUrls = post.slides ? (slidesByDeck[post.slides] || []) : [];
