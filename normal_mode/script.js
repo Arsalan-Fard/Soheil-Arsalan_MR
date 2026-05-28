@@ -53,32 +53,37 @@ function extractFirstImage(markdown) {
   const match = markdown.match(/!\[[^\]]*]\(([^)\s]+)(?:\s+["'][^"']*["'])?\)/);
   if (!match) return null;
 
-  let path = match[1];
-  // If path starts with /, it's from public folder
-  if (path.startsWith("/")) {
-    path = ".." + path;
-  } else if (!path.startsWith("..")) {
-    // If it's a relative path without ../, assume it's in public
-    path = "../public/" + path;
+  return resolvePublicAssetPath(match[1]);
+}
+
+function resolvePublicAssetPath(path) {
+  if (
+    /^(?:[a-z][a-z0-9+.-]*:)?\/\//i.test(path) ||
+    path.startsWith("data:") ||
+    path.startsWith("#")
+  ) {
+    return path;
   }
-  return path;
+
+  if (path.startsWith("/")) {
+    return `..${path}`;
+  }
+
+  if (path.startsWith("../")) {
+    return path;
+  }
+
+  return `../${path}`;
 }
 
 function renderMarkdown(markdown, options = {}) {
   const { rewriteImagePaths = false } = options;
   let html = marked.parse(markdown);
   if (rewriteImagePaths) {
-    html = html.replace(/<img src="([^"]*)"/g, (match, src) => {
-      let path = src;
-      // If path starts with /, it's from public folder
-      if (path.startsWith("/")) {
-        path = ".." + path;
-      } else if (!path.startsWith("..")) {
-        // If it's a relative path without ../, assume it's in public
-        path = "../public/" + path;
-      }
-      return `<img src="${path}"`;
-    });
+    html = html.replace(
+      /<(img|source|video)\b([^>]*?)\bsrc="([^"]*)"/g,
+      (match, tag, attrs, src) => `<${tag}${attrs} src="${resolvePublicAssetPath(src)}"`,
+    );
   }
   return html;
 }
